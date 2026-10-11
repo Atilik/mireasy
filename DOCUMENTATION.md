@@ -308,10 +308,22 @@ Running `.process_and_save()` generates a CSV with one row per audio file. All n
 ---
 
 ## References
-### Going to be updated
-- Foscarin, F., Schlüter, J., & Widmer, G. (2024). Beat This! Accurate beat tracking without DBN postprocessing. ISMIR.
-- Jensen, Timbre Models of Musical Sounds, Rapport 99/7, University of Copenhagen, 1999.
-- Kim, J. W., Salamon, J., Li, P., & Bello, J. P. (2018). CREPE: A convolutional representation for pitch estimation. ICASSP.
-- Pampalk, E., Rauber, A., Merkl, D. "Content-based Organization and Visualization of Music Archives", ACM Multimedia 2002, pp. 570-579.
-- Salakka, I., Pitkäniemi, A., Pentikäinen, E., Mikkonen, K., Saari, P., Toiviainen, P., & Särkämö, T. (2021). What makes music memorable? Relationships between acoustic musical features and music-evoked emotions and memories in older adults. PLoS ONE, 16(5), e0251692.
+
+The same list, grouped by feature and with links, is in the README's **References** section.
+
+- Alonso-Jiménez, P., Bogdanov, D., Pons, J., & Serra, X. (2020). TensorFlow audio models in Essentia. *Proceedings of ICASSP 2020*.
+- Alonso-Jiménez, P., Serra, X., & Bogdanov, D. (2022). Music representation learning based on editorial metadata from Discogs. *Proceedings of the 23rd ISMIR*.
+- Böck, S., Korzeniowski, F., Schlüter, J., Krebs, F., & Widmer, G. (2016). madmom: A new Python audio and music signal processing library. *Proceedings of the 24th ACM International Conference on Multimedia*, 1174–1178.
+- Bogdanov, D., Wack, N., Gómez, E., Gulati, S., Herrera, P., Mayor, O., Roma, G., Salamon, J., Zapata, J. R., & Serra, X. (2013). Essentia: An audio analysis library for music information retrieval. *Proceedings of the 14th ISMIR*, 493–498.
+- Défossez, A. (2021). Hybrid spectrogram and waveform source separation. *Proceedings of the ISMIR 2021 Workshop on Music Source Separation (MDX)*.
+- Foscarin, F., Schlüter, J., & Widmer, G. (2024). Beat This! Accurate beat tracking without DBN postprocessing. *Proceedings of the 25th ISMIR*.
 - ITU-R BS.1770-4 (2015). Algorithms to measure audio programme loudness and true-peak audio level.
+- Jensen, K. (1999). *Timbre Models of Musical Sounds* (Rapport 99/7). University of Copenhagen.
+- Kim, J. W., Salamon, J., Li, P., & Bello, J. P. (2018). CREPE: A convolutional representation for pitch estimation. *Proceedings of ICASSP 2018*.
+- McFee, B., Raffel, C., Liang, D., Ellis, D. P. W., McVicar, M., Battenberg, E., & Nieto, O. (2015). librosa: Audio and music signal analysis in Python. *Proceedings of the 14th Python in Science Conference (SciPy)*, 18–25.
+- Pampalk, E., Rauber, A., & Merkl, D. (2002). Content-based organization and visualization of music archives. *Proceedings of ACM Multimedia 2002*, 570–579.
+- Raffel, C., McFee, B., Humphrey, E. J., Salamon, J., Nieto, O., Liang, D., & Ellis, D. P. W. (2014). mir_eval: A transparent implementation of common MIR metrics. *Proceedings of the 15th ISMIR*.
+- Rouard, S., Massa, F., & Défossez, A. (2023). Hybrid Transformers for music source separation. *Proceedings of ICASSP 2023*.
+- Salakka, I., Pitkäniemi, A., Pentikäinen, E., Mikkonen, K., Saari, P., Toiviainen, P., & Särkämö, T. (2021). What makes music memorable? Relationships between acoustic musical features and music-evoked emotions and memories in older adults. *PLoS ONE, 16*(5), e0251692.
+- Steinmetz, C. J., & Reiss, J. D. (2021). pyloudnorm: A simple yet flexible loudness meter in Python. *150th Convention of the Audio Engineering Society*.
+- Toussaint, G. T. (2013). *The Geometry of Musical Rhythm: What Makes a "Good" Rhythm Good?* CRC Press.
