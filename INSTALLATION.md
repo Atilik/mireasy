@@ -25,7 +25,7 @@ Click the **menu (top-left) → About This Mac** and check:
 
 1. On the MIReasy GitHub page, click the green **`<> Code`** button → **Download ZIP**.
 2. In your **Downloads** folder, double-click the ZIP. A folder named
-   **`mireasy-main`** appears — that folder is mireasy.
+   **`mireasy-main`** appears - that folder is mireasy.
    *(Re-downloading later? Delete the old `mireasy-main` folder first.)*
 
 ## Step 3: Run the installer
