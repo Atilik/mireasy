@@ -1,17 +1,16 @@
-# mireasy: Music Analysis Toolbox
+# MIReasy: Music Analysis Toolbox
 
-**Accessible, reproducible music information retrieval (MIR) for researchers outside MIR.**
+**Easy to use, accessible, and reproducible Music Information Retrieval (MIR) for researchers outside of MIR.**
 
-mireasy is built for music psychologists, music therapists, clinicians, and other researchers
-who need established audio measures for their studies — tempo, loudness, syncopation, key,
-pitch, genre, mood, and more — without writing signal-processing code. Point it at the audio
-stimuli of an experiment (a single file, a folder of songs, or a folder of sessions) and it
-produces a CSV with one row per stimulus, computed by state-of-the-art, peer-reviewed MIR
-tools (see the **References** section at the end) through one consistent interface.
+MIReasy is built for researchers outside of MIR who need established audio measures for their stimuli.
+MIReast gives you tempo, loudness, syncopation, key, pitch, genre, mood, and more without 
+writing any code. Drag and drop an audio folder or file of an experiment and it extracts the information 
+using established MIR tools and produces a CSV with one row per stimulus through one interface. 
+Please see the **References** section at the end for more information on the incorparated methodologies. 
 
 **All analysis runs locally on your computer.** The internet is needed only to install the
-software and download the analysis models once — your audio files and your results never
-leave your machine, which matters when working with clinical or otherwise sensitive stimuli.
+software and download the analysis models once. Your audio files and your results never
+leave your machine.
 
 You can work in two ways: an interactive shell to load, analyze, and visualize audio —
 individually, by session (folder of songs), or by participant (folder of sessions) — or a
