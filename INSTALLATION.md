@@ -6,13 +6,13 @@ Total time: **10–20 minutes waiting**.
 
 ## Before you start — will it run on your Mac?
 
-Click the ** menu (top-left) → About This Mac** and check:
+Click the **menu (top-left) → About This Mac** and check:
 
 | You need | 
-|---|---|
+|---|
 | An Apple Silicon chip (M1, M2, M3, M4 …) |
-| macOS 15 (Sequoia) or newer |
-| ~6 GB free space, internet, and your Mac password | — |
+| macOS 15 (Sequoia) or newer | 
+| ~6 GB free space, internet, and your Mac password | 
 
 ---
 
