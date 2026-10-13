@@ -17,6 +17,58 @@ You can work in two ways: an interactive shell to load, analyze, and visualize a
 individually, by session (folder of songs), or by participant (folder of sessions) — or a
 zero-code batch pipeline ([HOW_TO_RUN.md](HOW_TO_RUN.md)): drag a folder in, get the CSV.
 
+**Jump to:** [Quick example](#-quick-example-what-do-i-actually-get) ·
+[Features](#features) · [Setup](INSTALLATION.md) ·
+[Getting help](#-getting-help) · [References](#-references)
+
+---
+
+## 🏁 Quick example: what do I actually get?
+
+> *"I have 40 music stimuli for an experiment. I want the tempo, loudness, and
+> spectral brightness of each one. What do I do?"*
+
+**Without writing any code** ([full guide](HOW_TO_RUN.md)):
+
+1. Install once — follow [INSTALLATION.md](INSTALLATION.md) (click-through, no terminal).
+2. Double-click **`analyze_folder.command`**, drag your stimuli folder into the
+   window, press Return.
+3. When it finishes, open the CSV it points you to — one row per stimulus,
+   44 columns of measures. `bpm` is your tempo, `loudness_lufs` your loudness,
+   and `spectral_centroid_mean` your spectral brightness.
+
+**From the terminal** (after Setup below):
+
+```bash
+conda activate mireasy
+cd /path/to/mireasy
+python -c 'from mireasy import mireasy; mireasy("/path/to/my_stimuli").process_and_save(".")'
+```
+
+**Try it right now:** the repo ships [`sample_stimuli/`](sample_stimuli/) —
+five fully synthetic test "songs" (no copyrighted audio; tempo and key are in
+the filenames so you can check the tool). Analyzing that folder gives:
+
+| filename | bpm | syncopation_score | key | scale | loudness_lufs | spectral_centroid_mean | … |
+|---|---|---|---|---|---|---|---|
+| 01_steady_drums_120bpm.wav | 120.0 | 52 | F# | minor | −20.2 | 4505 | … |
+| 02_syncopated_drums_95bpm.wav | 187.5 † | 61 | F# | major | −17.3 | 4449 | … |
+| 03_melody_a_minor_140bpm.wav | 142.9 | 44 | A | minor | −17.3 | 974 | … |
+| 04_chords_c_major_80bpm.wav | 81.1 | 38 | C | major | −16.7 | 787 | … |
+| 05_quiet_ambient_no_drums.wav | 25.6 ‡ | 0 | A | major | −31.2 | 557 | … |
+
+(…plus genre, mood, pitch, and more — 44 columns in total, grouped by topic;
+see [DOCUMENTATION.md](DOCUMENTATION.md) for every column's meaning.)
+
+The sample set is deliberately imperfect, because real results are too:
+**†** file 02 shows a *double-time octave error* (187.5 ≈ 2 × 95) — a known
+behavior of beat trackers on off-beat-heavy material; **‡** beat-based measures
+are not meaningful for non-rhythmic audio like file 05, and the key of
+drums-only files (01, 02) is likewise noise. Knowing which measures apply to
+which stimuli is part of using MIR responsibly.
+
+---
+
 ## Features
 
 - **Rhythm & Syncopation**: Beat and downbeat tracking using BEAT THIS! (or madmom), tempo estimation (BPM), and Toussaint syncopation scoring.
@@ -190,6 +242,17 @@ MIREASY_RUN_SLOW=1 python run_tests.py
 Tests that need the Essentia classifier models (`mireasy/models/*.pb`)
 skip automatically while those files are absent — run `python download_models.py`
 to activate them.
+
+---
+
+## 🆘 Getting help
+
+Stuck, found a bug, or unsure what a measure means? **Open an issue** at
+<https://github.com/Atilik/mireasy/issues> — it's a public message to us, no
+programming involved, and **[CONTRIBUTING.md](CONTRIBUTING.md) walks you
+through it click by click** (including how to attach the `install_log.txt` /
+`analyze_log.txt` files that mireasy writes for exactly this purpose).
+Feature requests and pull requests are covered there too.
 
 ---
 

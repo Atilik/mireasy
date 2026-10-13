@@ -125,3 +125,23 @@ def test_installation_md_mentions_the_moving_parts():
 
 def test_readme_links_installation_md():
     assert "INSTALLATION.md" in _read("README.md")
+
+
+def test_contributing_md_covers_the_basics():
+    s = _read("CONTRIBUTING.md")
+    for needle in ("github.com/Atilik/mireasy/issues", "New issue",
+                   "install_log.txt", "analyze_log.txt",
+                   "pull request", "MIREASY_RUN_SLOW"):
+        assert needle in s, f"CONTRIBUTING.md no longer mentions: {needle}"
+    assert "CONTRIBUTING.md" in _read("README.md"), \
+        "README no longer points to CONTRIBUTING.md"
+
+
+def test_dependency_licenses_md_covers_every_direct_dep():
+    s = _read("DEPENDENCY_LICENSES.md")
+    for dep in ("beat_this", "madmom", "demucs", "essentia", "librosa",
+                "mir_eval", "pyloudnorm", "numpy", "scipy", "torch",
+                "matplotlib", "sounddevice"):
+        assert dep in s, f"DEPENDENCY_LICENSES.md misses dependency: {dep}"
+    for flag in ("AGPL-3.0", "CC BY-NC-SA"):
+        assert flag in s, f"DEPENDENCY_LICENSES.md lost the {flag} flag"
