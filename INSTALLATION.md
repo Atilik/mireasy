@@ -2,7 +2,7 @@
 
 Unfortunatelly MIReasy is Mac only.
 There are 4 steps for installing MIReasy.
-Total time: **10–20 minutes waiting**.
+Total time: **10-20 minutes waiting**.
 
 ## Before you start - will it run on your Mac?
 
