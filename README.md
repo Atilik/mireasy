@@ -3,10 +3,10 @@
 **Easy to use, accessible, and reproducible Music Information Retrieval (MIR) for researchers outside of MIR.**
 
 MIReasy is built for researchers outside of MIR who need established audio measures for their stimuli.
-MIReast gives you tempo, loudness, syncopation, key, pitch, genre, mood, and more without 
+MIReasy gives you tempo, loudness, syncopation, key, pitch, genre, mood, and more without 
 writing any code. Drag and drop an audio folder or file of an experiment and it extracts the information 
 using established MIR tools and produces a CSV with one row per stimulus through one interface. 
-Please see the **References** section at the end for more information on the incorparated methodologies. 
+Please see the **References** section at the end for more information on the incorporated methodologies. 
 
 **All analysis runs locally on your computer.** The internet is needed only to install the
 software and download the analysis models once. Your audio files and your results never

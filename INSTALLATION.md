@@ -1,6 +1,6 @@
 # Installing MIReasy
 
-Unfortunatelly MIReasy is Mac only.
+Unfortunately MIReasy is Mac only.
 There are 4 steps for installing MIReasy.
 Total time: **10-20 minutes waiting**.
 
@@ -79,7 +79,7 @@ into the window** and press Return. Results land in an **`Analysis_…`** folder
 
 Every run writes a file called **`install_log.txt`** inside `mireasy-main`.
 Open a new email or issue to the mireasy author, **send `install_log.txt`**, it contains everything needed to help you. 
-You can alwayssafely re-run `install.command`. It shouldn't break an existing installation.
+You can always safely re-run `install.command`. It shouldn't break an existing installation.
 
 **If double-clicking opens the file in a text editor instead of running it**
 (or nothing happens): open **Terminal** (⌘-space, type "Terminal", Return),
