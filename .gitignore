@@ -25,3 +25,13 @@ install_log.txt
 analyze_log.txt
 .mireasy_installed
 .mireasy_install.lock/
+
+# Packaging (pip install -e .) and test/coverage artifacts
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
