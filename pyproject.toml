@@ -1,0 +1,77 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mireasy"
+dynamic = ["version"]
+description = "Accessible, reproducible music information retrieval (MIR) for researchers outside MIR: tempo, beats, syncopation, loudness, key, pitch, genre and mood per stimulus, exported as CSV."
+readme = "README.md"
+license = "BSD-3-Clause"
+license-files = ["LICENSE.md"]
+authors = [{ name = "Mehmet Atilay Kucukoglu" }]
+requires-python = ">=3.11"
+keywords = [
+  "music information retrieval", "music psychology", "music therapy",
+  "audio features", "tempo", "beat tracking", "syncopation", "loudness",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "Operating System :: MacOS",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Multimedia :: Sound/Audio :: Analysis",
+  "Topic :: Scientific/Engineering",
+]
+
+# Compatible ranges live here; the exact, tested pins live in environment.yml.
+# tests/test_packaging.py keeps the two files listing the same packages.
+dependencies = [
+  "numpy>=2.0,<3",
+  "scipy>=1.13,<2",
+  "torch>=2.8,<3",
+  "torchaudio>=2.8,<3",
+  "librosa>=0.11,<1",
+  "soundfile>=0.12",
+  "sounddevice>=0.5",
+  "pyloudnorm>=0.1",
+  "mir_eval>=0.7",
+  "demucs>=4.0,<5",
+  "matplotlib>=3.9,<4",
+  "ipython>=8",
+  # Essentia: AGPL-3.0 code, CC BY-NC-SA 4.0 models (see DEPENDENCY_LICENSES.md).
+  # Python 3.14 wheels exist only from build dev1438 onward.
+  "essentia-tensorflow==2.1b6.dev1389; python_version < '3.14'",
+  "essentia-tensorflow==2.1b6.dev1438; python_version >= '3.14'",
+  # BEAT THIS! (MIT) is not on PyPI: installed from the GitHub tag archive —
+  # pure Python, so no git and no compiler are needed on any platform.
+  "beat_this @ https://github.com/CPJKU/beat_this/archive/refs/tags/v1.1.0.zip",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8", "pytest-cov>=5"]
+notebooks = ["ipykernel"]
+
+[project.scripts]
+mireasy = "mireasy.mireasy:main"
+
+[project.urls]
+Homepage = "https://github.com/Atilik/mireasy"
+Documentation = "https://github.com/Atilik/mireasy/blob/main/DOCUMENTATION.md"
+Issues = "https://github.com/Atilik/mireasy/issues"
+
+[tool.setuptools]
+packages = ["mireasy"]
+
+[tool.setuptools.dynamic]
+version = { attr = "mireasy.__version__" }
+
+[tool.setuptools.exclude-package-data]
+# The Essentia models (~45 MB, downloaded by download_models.py) never ship
+# inside the package.
+mireasy = ["models/*"]

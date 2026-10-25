@@ -30,6 +30,7 @@ dependencies:
       - mir_eval==0.8.2
       - demucs==4.0.1
       - essentia-tensorflow==2.1b6.dev1389
+      - ipython>=8          # imported by rhythm.py; conda's ipykernel already provides it
       - pytest==8.4.2
       # BEAT THIS! beat tracker (ISMIR 2024) — not on PyPI. Bundled as a wheel
       # (pure Python, built from tag v1.1.0) so the install needs NO git and

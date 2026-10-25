@@ -10,6 +10,10 @@ Interactive shell:
     python -m mireasy <audio_file_or_folder>
 """
 
+# Single source of truth for the version (pyproject.toml reads it statically).
+# ".dev0" marks an unreleased build; the first release will be 0.1.0.
+__version__ = "0.1.0.dev0"
+
 __all__ = ["Stimulus", "Session", "Participant"]
 
 
