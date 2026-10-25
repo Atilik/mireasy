@@ -97,6 +97,34 @@ def test_load_audio_m4a(clicks_m4a):
     assert abs(wav.shape[1] - 3 * 44100) < 0.1 * 44100    # AAC adds a little padding
 
 
+# ── reproducibility contract (fast, no model) ───────────────
+
+def test_separate_disables_random_shifts(sine_wav, monkeypatch):
+    # Regression: Demucs's default shifts=1 applies a random 0–0.5 s time
+    # shift before separating, so identical input gave slightly different
+    # stems — and syncopation scores that drifted a few points between runs.
+    # Capture the real call's arguments with a stand-in model + apply_model.
+    import torch
+    import mireasy.separate as sep
+
+    class FakeModel:
+        samplerate, audio_channels = 44100, 2
+        sources = ["drums", "bass", "other", "vocals"]
+        def eval(self): return self
+        def to(self, device): return self
+
+    captured = {}
+    def fake_apply_model(model, mix, **kwargs):
+        captured.update(kwargs)
+        return torch.zeros(1, len(model.sources), *mix.shape[1:])
+
+    monkeypatch.setattr(sep, "_MODEL", FakeModel())
+    monkeypatch.setattr(sep, "apply_model", fake_apply_model)
+    sep.separate(sine_wav, target_source="drums")
+    assert captured.get("shifts") == 0, \
+        f"apply_model must be called with shifts=0 for reproducible stems, got {captured}"
+
+
 # ── full separation (slow, model required) ──────────────────
 
 @SLOW
@@ -125,14 +153,16 @@ def test_separate_m4a(clicks_m4a):
 
 
 @SLOW
-def test_separate_loop_stable_multithreaded(click_wav):
-    # Regression: torch used to be pinned to 1 thread over a segfault fear in
-    # loops. Re-verified stable multi-threaded — this guards that in CI-like
-    # runs. Stems are not bit-reproducible (true at any thread count), but
-    # their shape and rough energy must agree.
+def test_separate_loop_stable_and_reproducible(click_wav):
+    # Two regressions in one: (1) torch used to be pinned to 1 thread over a
+    # segfault fear in loops — re-verified stable multi-threaded; (2) stems
+    # used to differ between runs because of Demucs's random-shift default
+    # (shifts=1). With shifts=0 the same input must give the same stem,
+    # bit for bit — that is what makes the syncopation score repeatable.
     import torch
     assert torch.get_num_threads() > 1        # the pin must stay gone
     a, _, _ = separate(click_wav, target_source="drums")
     b, _, _ = separate(click_wav, target_source="drums")
     assert a.shape == b.shape
-    assert np.corrcoef(a, b)[0, 1] > 0.99
+    assert np.array_equal(a, b), \
+        f"stems differ between identical runs (max |diff| {np.abs(a - b).max():.3g})"

@@ -98,9 +98,14 @@ def separate(file, target_source="drums", gpu=None):
     waveform = _load_audio(file, model.samplerate, model.audio_channels)
     sr = model.samplerate
 
-    # Apply separation
+    # Apply separation. shifts=0 is required for reproducible measurements:
+    # Demucs's default (shifts=1) shifts the input by a random 0–0.5 s before
+    # separating, so the same file gives a slightly different stem — and a
+    # different syncopation score — on every run. The ~0.1 dB quality gain of
+    # the shift trick is irrelevant for onset detection.
     waveform = waveform.unsqueeze(0)
-    sources = apply_model(model, waveform, split=True, overlap=0.25, progress=True, device=device)[0]
+    sources = apply_model(model, waveform, shifts=0, split=True, overlap=0.25,
+                          progress=True, device=device)[0]
 
     # Map sources to names
     sources_dict = dict(zip(model.sources, sources))
