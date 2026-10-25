@@ -16,15 +16,16 @@ def _read(name):
 
 
 def test_env_yml_is_compile_free_and_git_free():
-    # Regression: madmom compiled on user machines (failed on a fresh macOS 26:
-    # SDK/linker mismatch), and git-URL deps need git, which fresh Macs lack.
-    # Both now ship as bundled wheels.
+    # Regression: git-URL deps need git, which fresh Macs lack, and compiled
+    # deps broke on user machines (madmom, since removed). BEAT THIS! ships as
+    # a bundled pure-Python wheel; nothing else may need git or a compiler.
     yml = _read("environment.yml")
     assert "git+" not in yml, "a git dependency crept back into environment.yml"
-    for wheel in ("wheels/madmom-0.17.dev0-cp311-cp311-macosx_11_0_arm64.whl",
-                  "wheels/beat_this-1.1.0-py3-none-any.whl"):
-        assert f"./{wheel}" in yml, f"environment.yml no longer installs {wheel}"
-        assert os.path.isfile(os.path.join(REPO, wheel)), f"{wheel} missing from repo"
+    assert "madmom" not in yml and "cython" not in yml, \
+        "madmom (or its build dep cython) crept back into environment.yml"
+    wheel = "wheels/beat_this-1.1.0-py3-none-any.whl"
+    assert f"./{wheel}" in yml, f"environment.yml no longer installs {wheel}"
+    assert os.path.isfile(os.path.join(REPO, wheel)), f"{wheel} missing from repo"
 
 
 def test_installation_md_mentions_the_moving_parts():
@@ -51,7 +52,7 @@ def test_contributing_md_covers_the_basics():
 
 def test_dependency_licenses_md_covers_every_direct_dep():
     s = _read("DEPENDENCY_LICENSES.md")
-    for dep in ("beat_this", "madmom", "demucs", "essentia", "librosa",
+    for dep in ("beat_this", "demucs", "essentia", "librosa",
                 "mir_eval", "pyloudnorm", "numpy", "scipy", "torch",
                 "matplotlib", "sounddevice"):
         assert dep in s, f"DEPENDENCY_LICENSES.md misses dependency: {dep}"

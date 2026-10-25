@@ -19,19 +19,18 @@ repository or website).
    needed:** accept this, negotiate with MTG, or make Essentia-dependent
    features an optional extra.
 3. **All pretrained model weights from MTG (Essentia models, incl. the ported
-   CREPE) and from madmom are CC BY-NC-SA 4.0** — attribution, **non-commercial
-   use only**, share-alike. In practice the package *as used for research* is
-   fine, but the overall offering cannot be presented as unrestricted BSD-3.
-   Note also that the madmom wheel bundled in `wheels/` *contains* madmom's
-   models, so this repository redistributes CC BY-NC-SA material (attribution
-   is kept in `wheels/README.md`).
+   CREPE) are CC BY-NC-SA 4.0** — attribution, **non-commercial use only**,
+   share-alike. In practice the package *as used for research* is fine, but
+   the overall offering cannot be presented as unrestricted BSD-3. (madmom,
+   whose bundled models carried the same license and were redistributed in
+   this repository, was removed on 2026-10-25; BEAT THIS! — MIT, weights
+   included — covers beat, downbeat and meter detection alone.)
 
 ## Direct dependencies
 
 | Package | Version | License | Used for |
 |---|---|---|---|
-| [beat_this](https://github.com/CPJKU/beat_this) | 1.1.0 | **MIT** (explicitly covers code *and* published model weights) | Beat/downbeat tracking (default) |
-| [madmom](https://github.com/CPJKU/madmom) | 0.17.dev0 (commit 27f032e) | **BSD-2-Clause (code) + CC BY-NC-SA 4.0 (bundled models)** — metadata states "BSD, CC BY-NC-SA" | Meter-aware downbeat tracking |
+| [beat_this](https://github.com/CPJKU/beat_this) | 1.1.0 | **MIT** (explicitly covers code *and* published model weights) | Beat, downbeat and meter detection |
 | [demucs](https://github.com/adefossez/demucs) | 4.0.1 | **MIT** (code; README does not state a license for the htdemucs weights — see open questions) | Drum separation for syncopation |
 | [essentia-tensorflow](https://essentia.upf.edu) | 2.1b6.dev1389 | **AGPL-3.0** (code; wheel bundles TensorFlow, Apache-2.0) | Key detection, CREPE pitch, genre/mood classifiers |
 | Essentia pretrained models | per `download_models.py` | **CC BY-NC-SA 4.0** ("All the models created by the MTG are licensed under CC BY-NC-SA 4.0"; proprietary license available on request) | Genre, mood, danceability, voice/instrumental, CREPE pitch |

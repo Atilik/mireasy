@@ -2,7 +2,6 @@ import librosa
 import mir_eval
 import numpy as np
 import torch
-from madmom.features.downbeats import RNNDownBeatProcessor, DBNDownBeatTrackingProcessor
 from IPython.display import Audio, display
 import matplotlib.pyplot as plt
 
@@ -257,7 +256,7 @@ def syncopation_score(beat_times, separated_drums, sr=44100, beats_per_bar=4, on
     return score, onset_times
 
 
-# Beat detection  (BEAT THIS! default, madmom fallback)
+# Beat detection  (BEAT THIS!, Foscarin et al. 2024)
 
 def _derive_positions_and_meter(beat_times, downbeat_times):
     """
@@ -319,9 +318,9 @@ def _derive_positions_and_meter(beat_times, downbeat_times):
     return positions, meter
 
 
-def detect_beats(y, sr, hop_length=512, use_madmom=False):
+def detect_beats(y, sr, hop_length=512):
     """
-    Detect beats, downbeat positions, and meter.
+    Detect beats, downbeat positions, and meter with BEAT THIS!.
 
     Parameters
     ----------
@@ -331,8 +330,6 @@ def detect_beats(y, sr, hop_length=512, use_madmom=False):
         Sample rate.
     hop_length : int
         Hop length for frame conversion.
-    use_madmom : bool
-        If True, use madmom RNN+DBN pipeline instead of BEAT THIS!.
 
     Returns
     -------
@@ -345,10 +342,7 @@ def detect_beats(y, sr, hop_length=512, use_madmom=False):
     meter : int
         Detected beats per bar (2, 3, or 4).
     """
-    if use_madmom:
-        return _detect_beats_madmom(y, sr, hop_length)
-    else:
-        return _detect_beats_beat_this(y, sr, hop_length)
+    return _detect_beats_beat_this(y, sr, hop_length)
 
 
 def _detect_beats_beat_this(y, sr, hop_length=512):
@@ -372,58 +366,6 @@ def _detect_beats_beat_this(y, sr, hop_length=512):
     beat_positions, meter = _derive_positions_and_meter(beat_times, downbeat_times)
 
     return beat_times, beat_frames, beat_positions, meter
-
-
-def _detect_beats_madmom(y, sr, hop_length=512):
-    """Beat + downbeat detection using madmom (legacy)."""
-
-    # Create processor objects — allow detection of 4/4
-    rnn_proc = RNNDownBeatProcessor()
-    dbn_proc = DBNDownBeatTrackingProcessor(beats_per_bar=[4], fps=100)
-
-    # Mirror-pad the start so madmom has musical context to detect the first beat.
-    pad_seconds = 4.0
-    pad_samples = int(pad_seconds * sr)
-    pad_samples = min(pad_samples, len(y))
-    mirror = y[:pad_samples][::-1].copy()
-    y_padded = np.concatenate([mirror, y])
-
-    # Get activations from padded audio
-    act = rnn_proc(y_padded, sr=sr)
-
-    # Result is Nx2 array: [[time, beat_position], ...]
-    result = dbn_proc(act)
-
-    if len(result) == 0:
-        return np.array([]), np.array([], dtype=int), np.array([], dtype=int), 4
-
-    # Subtract padding offset and keep only beats >= 0
-    beat_times = result[:, 0] - pad_seconds
-    beat_positions = result[:, 1].astype(int)
-
-    valid = beat_times >= -0.01
-    beat_times = beat_times[valid]
-    beat_positions = beat_positions[valid]
-    beat_times = np.maximum(beat_times, 0.0)
-
-    # Infer meter from max beat position value
-    meter = int(np.max(beat_positions))
-    if meter not in [2, 3, 4]:
-        meter = 4
-
-    beat_frames = librosa.time_to_frames(beat_times, sr=sr, hop_length=hop_length)
-
-    return beat_times, beat_frames, beat_positions, meter
-
-
-# Keep legacy wrapper so evas_eval.py / evas_debug_pipeline.py still work
-def detect_downbeats_with_meter(y, sr, hop_length=512):
-    """
-    Legacy wrapper — calls detect_beats(use_madmom=True) and returns
-    (beat_times, beat_positions, meter) for backward compatibility.
-    """
-    beat_times, _, beat_positions, meter = detect_beats(y, sr, hop_length, use_madmom=True)
-    return beat_times, beat_positions, meter
 
 
 def get_bpm(beat_times):

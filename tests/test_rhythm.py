@@ -1,7 +1,7 @@
 """Tests for mireasy/rhythm.py.
 
 Pure-logic functions are tested directly. Model-based beat detection
-(BEAT THIS! / madmom) is gated behind MIREASY_RUN_SLOW=1.
+(BEAT THIS!) is gated behind MIREASY_RUN_SLOW=1.
 """
 import math
 import os
@@ -240,19 +240,6 @@ def test_detect_beats_beat_this_on_clicks():
     y = make_clicks(times, 10.0)
     beat_times, beat_frames, positions, meter = detect_beats(y, SR)
     assert len(beat_times) > 10
-    assert meter in (2, 3, 4)
-    assert len(positions) == len(beat_times)
-    bpm = get_bpm(beat_times)
-    assert 110 <= bpm <= 130 or 55 <= bpm <= 65   # 120 or half-tempo octave
-
-
-@pytest.mark.skipif(not RUN_SLOW, reason="set MIREASY_RUN_SLOW=1 to run model-based beat detection")
-def test_detect_beats_madmom_on_clicks():
-    from mireasy.rhythm import detect_beats
-    times = np.arange(0.5, 9.5, 0.5)
-    y = make_clicks(times, 10.0)
-    beat_times, beat_frames, positions, meter = detect_beats(y, SR, use_madmom=True)
-    assert len(beat_times) > 0
     assert meter in (2, 3, 4)
     assert len(positions) == len(beat_times)
     bpm = get_bpm(beat_times)
