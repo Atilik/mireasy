@@ -1,5 +1,9 @@
 # MIReasy: Music Analysis Toolbox
 
+[![tests](https://github.com/Atilik/mireasy/actions/workflows/tests.yml/badge.svg)](https://github.com/Atilik/mireasy/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/Atilik/mireasy/branch/main/graph/badge.svg)](https://codecov.io/gh/Atilik/mireasy)
+
+
 **Easy to use, accessible, and reproducible Music Information Retrieval (MIR) for researchers outside of MIR.**
 
 MIReasy is built for researchers outside of MIR who need established audio measures for their stimuli.
