@@ -26,13 +26,11 @@ the answer too — that's why we prefer them over private email.
 
 Everything above, plus — these three things let us fix problems fast:
 
-- **What you did and what you expected** (e.g. "dragged my folder into
-  analyze_folder.command, expected a CSV, got the error below").
-- **The log file.** mireasy writes one automatically next to the app:
-  `install_log.txt` for installation problems, `analyze_log.txt` for analysis
-  problems. **Drag the file into the issue's message box** — it attaches
-  itself, and it contains the technical details (macOS version, chip, the full
-  error) so you don't have to.
+- **What you did and what you expected** (e.g. "ran `python -m mireasy
+  my_folder/`, expected the shell to open, got the error below").
+- **The full error message from the Terminal.** Select it, copy (⌘-C) and
+  paste it into the issue's message box. Please also mention your macOS
+  version and chip (** → About This Mac**).
 - **Your audio format** if the problem concerns a specific file (.wav, .mp3,
   .m4a, …) — but please don't upload copyrighted music itself.
 

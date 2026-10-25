@@ -28,80 +28,39 @@ Click the **menu (top-left) → About This Mac** and check:
    **`mireasy-main`** appears - that folder is mireasy.
    *(Re-downloading later? Delete the old `mireasy-main` folder first.)*
 
-## Step 3: Run the installer
+## Step 3: Create the environment
 
-Open the `mireasy-main` folder and **double-click `install.command`**.
+Open **Terminal** (⌘-space, type "Terminal", Return). Type `cd ` (with a space),
+**drag the `mireasy-main` folder into the Terminal window**, and press Return.
+Then run these lines one at a time:
 
-> **macOS will block it the first time, this is expected.** macOS shows:
-> *"Apple could not verify 'install.command' is free of malware…"*
->
-> 1. Click **Done**. ⚠️ **Not "Move to Trash"**, that deletes the installer
->    (if that happens, just re-do Step 2).
-> 2. Open ** → System Settings → Privacy & Security**, scroll down to
->    *"'install.command' was blocked…"* and click **Open Anyway**, then
->    confirm with your password or Touch ID.
->    *(This entry only appears right after the blocked attempt in point 1.)*
-> 3. A Terminal window opens. If macOS asks whether Terminal may access your
->    **Downloads** folder, click **Allow**.
-
-You only do this unblock **once per `.command` file**.
-
-## Step 4: Wait for the checkmark
-
-The installer window prints what it is doing. While it runs:
-
-- Please keep your laptop **open and plugged in**. A long wall of scrolling text for
-  5–15 minutes is **expected**.
-- The installer accepts conda's standard Terms of Service
-  ([anaconda.com/legal](https://anaconda.com/legal)). Conda requires this for
-  automated installs and it tells you so on screen.
-
-You are done when it prints:
-
+```bash
+conda env create -f environment.yml
+conda activate mireasy
+python download_models.py     # optional: enables genre/mood/pitch features
 ```
-✓✓✓  mireasy is ready!  ✓✓✓
+
+- The first line installs everything. Please keep your laptop **open and plugged in**. A long wall of scrolling text for
+  5–15 minutes is **expected**.
+- If conda asks you to accept its Terms of Service
+  ([anaconda.com/legal](https://anaconda.com/legal)), accept.
+
+## Step 4: Check it works
+
+```bash
+python run_tests.py           # should finish with "… passed" and no failures
+python -m mireasy /path/to/audio/
 ```
 
 ---
 
 ## Using MIReasy (every day)
 
-Two buttons described in [HOW_TO_RUN.md](HOW_TO_RUN.md):
-
-- **`analyze_folder.command`**: analyze everything automatically → CSV.
-- **`run_mireasy.command`**: explore interactively.
-
-Both: double-click (same one-time unblock as Step 3), **drag your audio folder
-into the window** and press Return. Results land in an **`Analysis_…`** folder in
-`mireasy-main`.
+In every new Terminal window: `conda activate mireasy`, then
+`python -m mireasy /path/to/audio/`.
+See README.md for the full feature documentation.
 
 ## If anything goes wrong
 
-Every run writes a file called **`install_log.txt`** inside `mireasy-main`.
-Open a new email or issue to the mireasy author, **send `install_log.txt`**, it contains everything needed to help you. 
-You can always safely re-run `install.command`. It shouldn't break an existing installation.
-
-**If double-clicking opens the file in a text editor instead of running it**
-(or nothing happens): open **Terminal** (⌘-space, type "Terminal", Return),
-type `zsh ` (with a space), **drag `install.command` into the Terminal
-window**, and press Return. This should work.
-
----
-
-<details>
-<summary><b>Appendix: manual installation (for terminal users)</b></summary>
-
-```bash
-git clone https://github.com/Atilik/mireasy.git
-cd mireasy
-conda env create -f environment.yml
-conda activate mireasy
-python download_models.py     # optional: enables genre/mood/pitch features
-python run_tests.py           # should finish with "… passed" and no failures
-python -m mireasy /path/to/audio/
-```
-
-Requirements: conda and git. Nothing compiles — the two non-PyPI dependencies
-install from prebuilt wheels in `wheels/` (see `wheels/README.md`).
-See README.md for the full feature documentation.
-</details>
+Open an issue at <https://github.com/Atilik/mireasy/issues> and paste the error
+message from the Terminal. [CONTRIBUTING.md](CONTRIBUTING.md) explains how.

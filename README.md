@@ -17,8 +17,8 @@ software and download the analysis models once. Your audio files and your result
 leave your machine.
 
 You can work in two ways: an interactive shell to load, analyze, and visualize audio —
-individually, by session (folder of songs), or by participant (folder of sessions) — or a
-zero-code batch pipeline ([HOW_TO_RUN.md](HOW_TO_RUN.md)): drag a folder in, get the CSV.
+individually, by session (folder of songs), or by participant (folder of sessions) — or from
+your own Python scripts and notebooks ([DOCUMENTATION.md](DOCUMENTATION.md)).
 
 **Jump to:** [Quick example](#-quick-example-what-do-i-actually-get) ·
 [Features](#features) · [Setup](INSTALLATION.md) ·
@@ -31,15 +31,6 @@ zero-code batch pipeline ([HOW_TO_RUN.md](HOW_TO_RUN.md)): drag a folder in, get
 > *"I have 40 music stimuli for an experiment. I want the tempo, loudness, and
 > spectral brightness of each one. What do I do?"*
 
-**Without writing any code** ([full guide](HOW_TO_RUN.md)):
-
-1. Install once — follow [INSTALLATION.md](INSTALLATION.md) (click-through, no terminal).
-2. Double-click **`analyze_folder.command`**, drag your stimuli folder into the
-   window, press Return.
-3. When it finishes, open the CSV it points you to — one row per stimulus,
-   44 columns of measures. `bpm` is your tempo, `loudness_lufs` your loudness,
-   and `spectral_centroid_mean` your spectral brightness.
-
 **From the terminal** (after Setup below):
 
 ```bash
@@ -47,6 +38,10 @@ conda activate mireasy
 cd /path/to/mireasy
 python -c 'from mireasy import mireasy; mireasy("/path/to/my_stimuli").process_and_save(".")'
 ```
+
+You get a CSV with one row per stimulus and 44 columns of measures. `bpm` is your
+tempo, `loudness_lufs` your loudness, and `spectral_centroid_mean` your spectral
+brightness.
 
 **Try it right now:** the repo ships [`sample_stimuli/`](sample_stimuli/) —
 five fully synthetic test "songs" (no copyrighted audio; tempo and key are in
@@ -74,7 +69,7 @@ which stimuli is part of using MIR responsibly.
 
 ## Features
 
-- **Rhythm & Syncopation**: Beat and downbeat tracking using BEAT THIS! (or madmom), tempo estimation (BPM), and Toussaint syncopation scoring.
+- **Rhythm & Syncopation**: Beat and downbeat tracking using BEAT THIS!, tempo estimation (BPM), and Toussaint syncopation scoring.
 - **Stem Separation**: Drum separation using Demucs.
 - **Timbre & Dynamics**: LUFS loudness, RMS energy, spectral irregularity, and fluctuation strength.
 - **Harmony & Pitch**: Key and scale extraction (Essentia), and frame-level pitch tracking (CREPE).
@@ -87,10 +82,7 @@ which stimuli is part of using MIR responsibly.
 ## 🛠️ How to Setup mireasy
 
 > ### 🖱️ Never used a terminal? Start here → **[INSTALLATION.md](INSTALLATION.md)**
-> A click-through guide that assumes zero experience: install one program,
-> download the ZIP, double-click `install.command`, and wait for the ✓.
-> Afterwards, analyze music by double-clicking `run_mireasy.command` and
-> dragging your audio folder in.
+> A step-by-step guide that assumes zero experience.
 
 **Supported platforms:** Apple Silicon Macs (M1 or newer) on macOS 15+.
 Intel Macs are not supported. Linux is expected to work but is untested — for
@@ -98,8 +90,8 @@ audio playback, install PortAudio (`sudo apt install libportaudio2`). Windows
 is not supported natively (use WSL2).
 
 **Quickstart for terminal users** (needs [conda](https://docs.conda.io/en/latest/miniconda.html)
-and git; nothing compiles — the two non-PyPI dependencies ship as prebuilt
-wheels in `wheels/`):
+and git; nothing compiles — the one non-PyPI dependency ships as a prebuilt
+wheel in `wheels/`):
 
 ```bash
 git clone https://github.com/Atilik/mireasy.git
@@ -113,8 +105,7 @@ python -m mireasy /path/to/audio/
 
 **Notes**
 - Reinstalling? `conda env remove -n mireasy` first — `conda env create` won't
-  overwrite an existing environment. Or simply double-click `install.command`,
-  which handles repairs automatically.
+  overwrite an existing environment.
 - On first analysis run, the beat tracker (BEAT THIS!) and Demucs download
   their own checkpoints automatically (~100 MB, one time) — so the first song
   takes longer and needs an internet connection.
@@ -237,7 +228,7 @@ The pitch view mode in `stimulus.play()` runs CREPE pitch detection.
 # Fast suite — synthetic audio only (~15 s with classifier models installed)
 python run_tests.py
 
-# Also run the slow model tests (madmom beat detection, Demucs separation
+# Also run the slow model tests (BEAT THIS! beat detection, Demucs separation
 # if the htdemucs checkpoint is already cached)
 MIREASY_RUN_SLOW=1 python run_tests.py
 ```
@@ -253,8 +244,7 @@ to activate them.
 Stuck, found a bug, or unsure what a measure means? **Open an issue** at
 <https://github.com/Atilik/mireasy/issues> — it's a public message to us, no
 programming involved, and **[CONTRIBUTING.md](CONTRIBUTING.md) walks you
-through it click by click** (including how to attach the `install_log.txt` /
-`analyze_log.txt` files that mireasy writes for exactly this purpose).
+through it click by click**.
 Feature requests and pull requests are covered there too.
 
 ---
@@ -266,9 +256,6 @@ research, please also cite the tools that computed your measures:
 
 **Beat & downbeat tracking — [Beat This!](https://github.com/CPJKU/beat_this)**
 - Foscarin, F., Schlüter, J., & Widmer, G. (2024). Beat This! Accurate beat tracking without DBN postprocessing. *Proceedings of the 25th International Society for Music Information Retrieval Conference (ISMIR)*.
-
-**Meter-aware downbeat tracking — [madmom](https://github.com/CPJKU/madmom)**
-- Böck, S., Korzeniowski, F., Schlüter, J., Krebs, F., & Widmer, G. (2016). madmom: A new Python audio and music signal processing library. *Proceedings of the 24th ACM International Conference on Multimedia*, 1174–1178.
 
 **Drum separation — [Demucs](https://github.com/adefossez/demucs)**
 - Rouard, S., Massa, F., & Défossez, A. (2023). Hybrid Transformers for music source separation. *Proceedings of ICASSP 2023*.

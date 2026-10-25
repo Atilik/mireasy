@@ -313,7 +313,6 @@ The same list, grouped by feature and with links, is in the README's **Reference
 
 - Alonso-Jiménez, P., Bogdanov, D., Pons, J., & Serra, X. (2020). TensorFlow audio models in Essentia. *Proceedings of ICASSP 2020*.
 - Alonso-Jiménez, P., Serra, X., & Bogdanov, D. (2022). Music representation learning based on editorial metadata from Discogs. *Proceedings of the 23rd ISMIR*.
-- Böck, S., Korzeniowski, F., Schlüter, J., Krebs, F., & Widmer, G. (2016). madmom: A new Python audio and music signal processing library. *Proceedings of the 24th ACM International Conference on Multimedia*, 1174–1178.
 - Bogdanov, D., Wack, N., Gómez, E., Gulati, S., Herrera, P., Mayor, O., Roma, G., Salamon, J., Zapata, J. R., & Serra, X. (2013). Essentia: An audio analysis library for music information retrieval. *Proceedings of the 14th ISMIR*, 493–498.
 - Défossez, A. (2021). Hybrid spectrogram and waveform source separation. *Proceedings of the ISMIR 2021 Workshop on Music Source Separation (MDX)*.
 - Foscarin, F., Schlüter, J., & Widmer, G. (2024). Beat This! Accurate beat tracking without DBN postprocessing. *Proceedings of the 25th ISMIR*.
