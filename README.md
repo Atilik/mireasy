@@ -2,6 +2,7 @@
 
 [![tests](https://github.com/Atilik/mireasy/actions/workflows/tests.yml/badge.svg)](https://github.com/Atilik/mireasy/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/Atilik/mireasy/branch/main/graph/badge.svg)](https://codecov.io/gh/Atilik/mireasy)
+[![docs](https://readthedocs.org/projects/mireasy/badge/?version=latest)](https://mireasy.readthedocs.io/en/latest/)
 
 
 **Easy to use, accessible, and reproducible Music Information Retrieval (MIR) for researchers outside of MIR.**
