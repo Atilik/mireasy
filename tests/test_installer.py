@@ -35,8 +35,9 @@ def test_installation_md_mentions_the_moving_parts():
     # pip + venv is the main route (2026-11-17, his decision); conda is the
     # alternative for people who already use it.
     s = _read("INSTALLATION.md")
-    for needle in ("python.org", "-m venv", 'pip install -e ".[test]"',
+    for needle in ("python.org", 'install -e ".[test]"',
                    "Install Certificates.command",      # python.org Mac gotcha
+                   "externally-managed-environment",    # the case that needs a venv
                    "download_models.py", "run_tests.py", "mireasy sample_stimuli/",
                    "conda env create -f environment.yml", "conda activate mireasy",
                    "Apple Silicon", "macOS 15"):
