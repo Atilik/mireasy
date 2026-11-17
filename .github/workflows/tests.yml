@@ -6,9 +6,12 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Pull requests: a newer push cancels the older run. Pushes to main: never —
+# the sequential macOS cells take ~15 min, and a second push inside that
+# window used to cancel the first run's Macs before they reached a verdict.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   # CI runners have no display: never let matplotlib try to open a window.
