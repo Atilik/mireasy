@@ -9,14 +9,20 @@ import yaml
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WORKFLOW = os.path.join(REPO, ".github", "workflows", "tests.yml")
 
+PYTHONS = ["3.11", "3.12", "3.13", "3.14"]
+
 
 def _workflow():
     with open(WORKFLOW, encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 
+def _job(name):
+    return _workflow()["jobs"][name]
+
+
 def _steps(job):
-    return _workflow()["jobs"][job]["steps"]
+    return _job(job)["steps"]
 
 
 def _runs(job):
@@ -30,24 +36,35 @@ def test_workflow_parses_and_triggers_on_main_and_prs():
 
 
 def test_matrix_covers_the_supported_platforms_and_pythons():
-    m = _workflow()["jobs"]["test"]["strategy"]["matrix"]
-    assert m["os"] == ["ubuntu-latest", "macos-latest"]
-    assert m["python"] == ["3.11", "3.12", "3.13", "3.14"]
-    assert _workflow()["jobs"]["test"]["strategy"]["fail-fast"] is False
+    linux, mac = _job("test-linux"), _job("test-macos")
+    assert linux["runs-on"] == "ubuntu-latest" and mac["runs-on"] == "macos-latest"
+    for job in (linux, mac):
+        assert job["strategy"]["matrix"]["python"] == PYTHONS
+        assert job["strategy"]["fail-fast"] is False
+
+
+def test_macos_jobs_are_requested_one_at_a_time():
+    # GitHub's Apple-Silicon runner pool is capacity-constrained: four
+    # simultaneous requests got three dropped unstarted on consecutive runs
+    # (2026-11-17). Sequential requests get served.
+    assert _job("test-macos")["strategy"]["max-parallel"] == 1
 
 
 def test_ci_installs_from_pyproject_and_runs_the_suite():
-    runs = _runs("test")
-    assert 'pip install -e ".[test]"' in runs
-    assert "pip check" in runs
-    assert "download_models.py" in runs
-    assert "run_tests.py" in runs and "--cov=mireasy" in runs
+    for job in ("test-linux", "test-macos"):
+        runs = _runs(job)
+        assert 'pip install -e ".[test]"' in runs, job
+        assert "pip check" in runs, job
+        assert "download_models.py" in runs, job
+        assert "run_tests.py" in runs, job
+    assert "--cov=mireasy" in _runs("test-linux")
 
 
 def test_ci_is_headless_safe_and_cpu_only_on_linux():
     wf = _workflow()
     assert wf["env"]["MPLBACKEND"] == "Agg"
-    assert "download.pytorch.org/whl/cpu" in _runs("test")
+    assert "download.pytorch.org/whl/cpu" in _runs("test-linux")
+    assert "download.pytorch.org/whl/cpu" not in _runs("test-macos")   # mac wheels are already CPU/MPS
 
 
 def test_slow_tier_runs_the_real_models():
@@ -61,7 +78,7 @@ def test_slow_tier_runs_the_real_models():
 def test_both_tiers_upload_coverage():
     # The badge should reflect the real model code paths too, so the slow job
     # measures and uploads as well; Codecov merges the two flags per commit.
-    for job, flag in (("test", "fast"), ("slow", "slow")):
+    for job, flag in (("test-linux", "fast"), ("slow", "slow")):
         run_step = [s for s in _steps(job) if "run_tests.py" in s.get("run", "")][0]
         assert "--cov=mireasy" in run_step["run"], f"{job} job does not measure coverage"
         uploads = [s for s in _steps(job) if "codecov" in s.get("uses", "")]
