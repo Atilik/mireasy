@@ -75,3 +75,11 @@ version = { attr = "mireasy.__version__" }
 # The Essentia models (~45 MB, downloaded by download_models.py) never ship
 # inside the package.
 mireasy = ["models/*"]
+
+[tool.coverage.run]
+source = ["mireasy"]
+# play.py and plot.py are the Tk GUI windows (interactive player, spectrogram
+# viewer). They cannot run on a headless CI machine, so counting them would
+# only hide how well the analysis code is tested. Measured by hand when the
+# GUI changes.
+omit = ["mireasy/play.py", "mireasy/plot.py"]

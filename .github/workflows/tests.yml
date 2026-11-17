@@ -73,6 +73,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           files: coverage.xml
+          flags: fast
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
 
@@ -118,4 +119,14 @@ jobs:
       - name: Run full suite including the slow tier
         env:
           MIREASY_RUN_SLOW: "1"
-        run: python run_tests.py
+        run: python run_tests.py --cov=mireasy --cov-report=xml
+
+      # Codecov merges this with the fast-tier upload for the same commit, so
+      # the badge also counts the real BEAT THIS! / Demucs code paths.
+      - name: Upload coverage to Codecov (slow tier)
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage.xml
+          flags: slow
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false

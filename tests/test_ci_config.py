@@ -2,6 +2,7 @@
 lives there. Offline and fast (PyYAML is a demucs dependency, always present).
 """
 import os
+import tomllib
 
 import yaml
 
@@ -55,3 +56,23 @@ def test_slow_tier_runs_the_real_models():
     assert run_step["env"]["MIREASY_RUN_SLOW"] == "1"
     warm = _runs("slow")
     assert "get_model('htdemucs')" in warm and "Audio2Beats" in warm
+
+
+def test_both_tiers_upload_coverage():
+    # The badge should reflect the real model code paths too, so the slow job
+    # measures and uploads as well; Codecov merges the two flags per commit.
+    for job, flag in (("test", "fast"), ("slow", "slow")):
+        run_step = [s for s in _steps(job) if "run_tests.py" in s.get("run", "")][0]
+        assert "--cov=mireasy" in run_step["run"], f"{job} job does not measure coverage"
+        uploads = [s for s in _steps(job) if "codecov" in s.get("uses", "")]
+        assert len(uploads) == 1 and uploads[0]["with"]["flags"] == flag, \
+            f"{job} job must upload coverage once, with flag {flag!r}"
+
+
+def test_coverage_omits_only_the_gui_modules():
+    # play.py / plot.py open Tk windows and cannot run headless; nothing else
+    # may be excluded, or the percentage stops meaning what the README implies.
+    with open(os.path.join(REPO, "pyproject.toml"), "rb") as f:
+        cov = tomllib.load(f)["tool"]["coverage"]["run"]
+    assert cov["source"] == ["mireasy"]
+    assert sorted(cov["omit"]) == ["mireasy/play.py", "mireasy/plot.py"]
