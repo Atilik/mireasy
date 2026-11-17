@@ -64,6 +64,7 @@ def test_loudness_properties(sine_wav):
     assert -70 < s.loudness_lufs < 0
     assert -70 < s.loudness_rms_db < 0
     assert 0 < s.rms < 1
+    assert 2.5 < s.crest_factor_db < 3.5   # a sine's crest factor is 3.01 dB (#7)
     assert s._loudness_lufs is not None    # cached after first access
 
 
@@ -215,7 +216,7 @@ def test_collect_attrs_schema(sine_wav, inject_rhythm):
     row = s._collect_attrs()
     expected = {
         "filename", "duration", "sr", "n_channels",
-        "loudness_lufs", "loudness_rms_db", "rms",
+        "loudness_lufs", "loudness_rms_db", "rms", "crest_factor_db",
         "bpm", "n_beats", "n_onsets",
         "syncopation_score", "syncopation_score_meter", "meter",
         "genre", "genre_confidence", "voice_instrumental",
@@ -448,6 +449,58 @@ def test_declining_separation_returns_cleanly(sine_wav, inject_rhythm, monkeypat
     assert s.detect_onsets() is None
     assert len(prompts) == 2                     # one prompt per call, no re-prompts
     assert s.toussaint_syncopation_score is None
+
+
+def _fake_separation(monkeypatch):
+    """Stand in for Demucs: return click-track 'drums' without any model."""
+    import mireasy.mireasy as rw
+    from conftest import make_clicks, SR
+    drums = make_clicks(np.arange(0.5, 9.5, 0.5), 10.0, sr=SR)
+    monkeypatch.setattr(rw, "separate",
+                        lambda path, target_source="drums", gpu=None:
+                        (drums, np.zeros_like(drums), SR))
+
+
+def test_separate_never_prompts_from_a_background_thread(sine_wav, inject_rhythm, monkeypatch):
+    # Regression (#13): the player's Onsets button runs detection in a worker
+    # thread. input() there drove Tk's input hook off the main thread and
+    # aborted the whole process ("Tcl_WaitForEvent: Notifier not initialized").
+    # Off the main thread, separate() must proceed without asking.
+    import threading
+
+    def no_input(*a):
+        raise AssertionError("input() must never be called from a worker thread")
+    monkeypatch.setattr("builtins.input", no_input)
+    _fake_separation(monkeypatch)
+    s = Stimulus(sine_wav)
+    inject_rhythm(s)
+    s.separated_drums = None                     # force the separation path
+    errors = []
+
+    def work():
+        try:
+            s.onset_detection()                  # confirm=True, but not the main thread
+        except BaseException as e:               # report anything, including asserts
+            errors.append(e)
+
+    t = threading.Thread(target=work)
+    t.start()
+    t.join(timeout=120)
+    assert not t.is_alive() and not errors, errors
+    assert s.separated_drums is not None and s.onset_times is not None
+
+
+def test_onset_detection_confirm_false_never_prompts(sine_wav, inject_rhythm, monkeypatch):
+    # The player now asks with a Tk dialog first and passes confirm=False;
+    # the terminal prompt must not appear on top of that.
+    monkeypatch.setattr("builtins.input",
+                        lambda *a: pytest.fail("prompted despite confirm=False"))
+    _fake_separation(monkeypatch)
+    s = Stimulus(sine_wav)
+    inject_rhythm(s)
+    s.separated_drums = None
+    assert s.onset_detection(confirm=False) is not None
+    assert s.separated_drums is not None
 
 
 def test_classify_without_models_warns_and_continues(sine_wav, missing_models, capsys):

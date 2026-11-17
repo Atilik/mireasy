@@ -9,6 +9,21 @@ import inspect
 import pytest
 
 
+# ── issue #13: no terminal prompt from the player's worker thread ───────────
+
+def test_player_asks_about_separation_with_a_tk_dialog_not_input():
+    # The Onsets button runs detection in a worker thread; a terminal input()
+    # from there aborts the process on macOS. The question is now a Tk dialog
+    # on the UI thread, and the worker is told the answer (confirm=False).
+    import os
+    here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    with open(os.path.join(here, "mireasy", "play.py"), encoding="utf-8") as f:
+        src = f.read()
+    assert "messagebox.askyesno" in src
+    assert "detect_onsets(confirm=False)" in src
+    assert "confirm in the terminal" not in src
+
+
 # ── pure helpers ────────────────────────────────────────────
 
 def test_format_time():

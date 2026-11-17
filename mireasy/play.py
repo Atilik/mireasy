@@ -2,6 +2,7 @@ import os
 import time as _time
 import threading
 import tkinter as tk
+from tkinter import messagebox
 import numpy as np
 import mir_eval
 import subprocess
@@ -889,14 +890,25 @@ def play_interactive(stimulus, xlim=None, ylim=None):
             _apply_toggle("onsets", True)
             return
         if stimulus.separated_drums is None:
-            status_var.set("⚠️  Please confirm in the terminal")
+            # Ask HERE, on the Tk thread, with a Tk dialog. The old terminal
+            # prompt ran input() inside the worker thread, which drives Tk's
+            # input hook off-thread and aborts the process on macOS
+            # ("Tcl_WaitForEvent: Notifier not initialized", issue #13).
+            if not messagebox.askyesno(
+                    "Drum separation needed",
+                    "Onsets are detected on the isolated drum track.\n\n"
+                    "This runs Demucs drum separation, which takes roughly as "
+                    "long as the song itself on a CPU.\n\nProceed?",
+                    parent=win):
+                status_var.set("")
+                return
+            status_var.set("Separating drums — takes about as long as the song...")
         else:
             status_var.set("Detecting onsets...")
 
         def _prepare():
-            stimulus.detect_onsets()  # may run Demucs (+ terminal prompt)
+            stimulus.detect_onsets(confirm=False)   # question already answered above
             if stimulus.onset_times is None:
-                # Declined in the terminal — stop here instead of re-prompting
                 raise RuntimeError("drum separation was declined")
             _build_onset_track()
 

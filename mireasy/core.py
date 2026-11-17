@@ -112,6 +112,7 @@ def stimulus_help(stimulus):
     print("  .loudness_lufs             - Integrated loudness [−70 to 0] LUFS")
     print("  .loudness_rms_db           - RMS level [−∞ to 0] dBFS")
     print("  .rms                       - Mean RMS energy [0–1]")
+    print("  .crest_factor_db           - Peak-to-RMS ratio (dynamic range) [0–∞] dB")
     print("  .BPM                       - Detected tempo [~30–300] BPM")
     print("  .meter                     - Beats per bar (2, 3 or 4)")
     print("  .beat_times                - numpy array of detected beats (seconds)")
@@ -170,6 +171,7 @@ def stimulus_print(stimulus):
     print(f"  Int.LUFS : {stimulus.loudness_lufs:.2f}  [−70 to 0] (ITU-R BS.1770-4)")
     print(f"  RMS (dB) : {stimulus.loudness_rms_db:.2f} dBFS  [−∞ to 0]")
     print(f"  RMS      : {stimulus.rms:.6f}  [0–1]")
+    print(f"  Crest    : {stimulus.crest_factor_db:.2f} dB  [0–∞] (peak/RMS, dynamic range)")
 
     # BPM (lazy — don't trigger)
     if getattr(stimulus, '_bpm', None) is not None:
@@ -241,6 +243,7 @@ def stimulus_print_all(stimulus):
     print(f"  loudness_lufs             : {stimulus.loudness_lufs:.2f} LUFS")
     print(f"  loudness_rms_db           : {stimulus.loudness_rms_db:.2f} dBFS")
     print(f"  rms                       : {stimulus.rms:.6f}")
+    print(f"  crest_factor_db           : {stimulus.crest_factor_db:.2f} dB")
     
     # Print other attributes in __dict__, skipping private ones
     for key, value in stimulus.__dict__.items():

@@ -194,6 +194,7 @@ Basic measures that don't fit the three categories above but are always useful: 
 | `.loudness_lufs` | −70 to 0 | LUFS | **Integrated loudness** per ITU-R BS.1770-4. Measures perceived loudness over the entire file. −14 LUFS is a common streaming target. More negative = quieter. NaN for clips shorter than the 400 ms gating block. |
 | `.loudness_rms_db` | −∞ to 0 | dBFS | **RMS level in decibels** relative to full scale. 0 dBFS = maximum digital level. Typical music sits around −10 to −20 dBFS. |
 | `.rms` | 0 to 1 | linear | **Mean RMS energy** (librosa). Linear amplitude measure. Higher = louder. |
+| `.crest_factor_db` | 0 to ~30 | dB | **Crest factor** — peak level divided by RMS level, in dB: a dynamic-range measure. Sustained or heavily compressed material (a pad, limited pop) sits around 3–8 dB; sparse, transient material (solo drums, plucked notes with silence between) reaches 15–25 dB. A pure sine is 3.01 dB. NaN for silence. |
 
 > **What do the numbers mean?**
 > - LUFS of **−14** ≈ Spotify loudness normalization target
@@ -275,7 +276,7 @@ Running `.process_and_save()` generates a CSV with one row per audio file. All n
 `spectral_irregularity`, `spectral_centroid_mean`, `spectral_centroid_std`, `spectral_bandwidth_mean`, `spectral_bandwidth_std`, `spectral_rolloff_mean`, `spectral_rolloff_std`, `spectral_flatness_mean`, `spectral_flatness_std`, `zcr_mean`, `zcr_std`
 
 **4. Loudness & other:**
-`loudness_lufs`, `loudness_rms_db`, `rms`, `genre`, `genre_confidence`, `voice_instrumental`, `mood_happy`, `mood_sad`, `mood_aggressive`, `mood_relaxed`
+`loudness_lufs`, `loudness_rms_db`, `rms`, `crest_factor_db`, `genre`, `genre_confidence`, `voice_instrumental`, `mood_happy`, `mood_sad`, `mood_aggressive`, `mood_relaxed`
 
 **Attribute → CSV column mapping** (where names differ):
 

@@ -1,6 +1,7 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["ABSL_MIN_LOG_LEVEL"] = "3"
+import threading
 import numpy as np
 import librosa
 from datetime import datetime
@@ -8,7 +9,7 @@ from datetime import datetime
 from .plot import plot_beats as _plot_beats, plot_waveform as _plot_waveform, plot_beats_and_onsets as _plot_beats_and_onsets, plot_interactive as _plot_interactive, plot_session_boxplots as _plot_session_boxplots, plot_spectrogram as _plot_spectrogram
 from .rhythm import detect_beats, get_bpm, onset_detection, syncopation_score
 from .core import load_audio, write_to_csv, stimulus_help as _stimulus_help, stimulus_print as _stimulus_print, stimulus_print_all as _stimulus_print_all, session_help as _session_help, session_print as _session_print, participant_help as _participant_help, participant_print as _participant_print, clear, AUDIO_EXTS, natural_key
-from .dsp import normalize, get_loudness, get_rms, compute_fluctuation as _compute_fluctuation, spectral_irregularity as _spectral_irregularity, compute_spectral_features as _compute_spectral_features
+from .dsp import normalize, get_loudness, get_rms, get_crest_factor_db, compute_fluctuation as _compute_fluctuation, spectral_irregularity as _spectral_irregularity, compute_spectral_features as _compute_spectral_features
 from .play import play_audio, play_interactive as _play_interactive, sonify_beats as _sonify_beats, sonify_beats_and_onsets as _sonify_beats_and_onsets
 from .separate import separate
 from .genre import (classify_genre as _classify_genre,
@@ -71,6 +72,7 @@ class Stimulus:
         self._loudness_lufs = None
         self._loudness_rms_db = None
         self._rms = None
+        self._crest_factor_db = None
 
         # Analysis results (lazy)
         self.onset_times = None
@@ -181,6 +183,7 @@ class Stimulus:
         if self._loudness_lufs is None:
             self._loudness_lufs, self._loudness_rms_db = get_loudness(self.y, self.sr)
             self._rms = get_rms(self.y, self.sr)
+            self._crest_factor_db = get_crest_factor_db(self.y)
 
     @property
     def loudness_lufs(self):
@@ -196,6 +199,12 @@ class Stimulus:
     def rms(self):
         self._calc_loudness_if_needed()
         return self._rms
+
+    @property
+    def crest_factor_db(self):
+        """Peak-to-RMS ratio in dB (dynamic range): ~3 dB compressed, 15–25 dB sparse/transient."""
+        self._calc_loudness_if_needed()
+        return self._crest_factor_db
 
     # Private helpers
     def _to_mono(self):
@@ -217,8 +226,16 @@ class Stimulus:
         gpu : torch.device or None
             GPU device. If None, uses CPU.
         confirm : bool
-            If True, ask user before proceeding (default: True).
+            If True, ask user before proceeding (default: True). The question
+            is only asked on the main thread: from a worker thread (e.g. the
+            player's buttons) input() would run Tk's event hook off-thread and
+            abort the process ("Tcl_WaitForEvent: Notifier not initialized"),
+            so there the separation simply proceeds.
         """
+        if (confirm and self.separated_drums is None
+                and threading.current_thread() is not threading.main_thread()):
+            print("Running Demucs drum separation (no prompt: not on the main thread)...")
+            confirm = False
         if confirm and self.separated_drums is None:
             ans = input(
                 "!!! This requires Demucs drum separation — on a CPU it takes roughly\n"
@@ -240,23 +257,25 @@ class Stimulus:
         # (This will trigger onset detection if not already done)
         self.syncopation_score()
 
-    def onset_detection(self, y=None, hop_length=512, delta=0.25):
+    def onset_detection(self, y=None, hop_length=512, delta=0.25, confirm=True):
         """
         Detect onsets using Path 2 logic (no HPSS, good for drums).
         Delegates to rhythm.onset_detection.
-        
+
         Args:
             y: Audio time series (monophonic). If None, uses self.separated_drums.
             hop_length: Hop length.
             delta: Detection threshold (default 0.25).
-            
+            confirm: Ask before running Demucs drum separation (default True);
+                pass False when the question was already answered elsewhere.
+
         Returns:
             onset_times: Array of onset times in seconds, or None if drum
             separation was declined.
         """
         if y is None:
             if self.separated_drums is None:
-                self.separate()
+                self.separate(confirm=confirm)
                 if self.separated_drums is None:    # separation declined
                     return None
 
@@ -280,12 +299,12 @@ class Stimulus:
         self.onset_times = onset_detection(y, self.sr, hop_length, delta)
         return self.onset_times
 
-    def detect_onsets(self, y=None, hop_length=512, delta=0.25):
+    def detect_onsets(self, y=None, hop_length=512, delta=0.25, confirm=True):
         """
         Alias for onset_detection.
         Detect onsets using Path 2 logic.
         """
-        onsets = self.onset_detection(y=y, hop_length=hop_length, delta=delta)
+        onsets = self.onset_detection(y=y, hop_length=hop_length, delta=delta, confirm=confirm)
         if onsets is None:                          # separation declined
             return None
         # Auto-calculate syncopation score since we have onsets
@@ -682,6 +701,7 @@ class Stimulus:
         row["loudness_lufs"] = self.loudness_lufs
         row["loudness_rms_db"] = self.loudness_rms_db
         row["rms"] = self.rms
+        row["crest_factor_db"] = self.crest_factor_db
         if self._genre_predictions is not None:
             # CSV keeps only the top-1 of genre_top5: label + its confidence
             row["genre"] = self._genre_predictions[0][0]

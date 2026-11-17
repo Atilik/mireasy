@@ -73,6 +73,38 @@ def get_rms(y, sr):
     return rms_mean
 
 
+def get_crest_factor_db(y):
+    """
+    Crest factor: peak-to-RMS ratio of the whole signal, in dB.
+
+    A dynamic-range measure. Sustained, compressed material (a loud pad,
+    heavily limited pop) sits around 3–8 dB; sparse, transient material
+    (solo drums, plucked notes with silence between them) reaches 15–25 dB.
+    A pure sine is 3.01 dB, a square wave 0 dB.
+
+    Parameters
+    ----------
+    y : np.ndarray
+        Audio signal.  Mono (n_samples,) or stereo (n_channels, n_samples);
+        stereo is mixed to mono first, like the other loudness measures.
+
+    Returns
+    -------
+    crest_db : float
+        20 * log10(peak / rms), or NaN for a silent signal.
+    """
+    y = np.asarray(y, dtype=np.float64)
+    if y.ndim == 2:
+        y = librosa.to_mono(y)
+    if y.size == 0:
+        return float("nan")
+    peak = float(np.max(np.abs(y)))
+    rms = float(np.sqrt(np.mean(y ** 2)))
+    if peak <= 0.0 or rms <= 0.0:
+        return float("nan")
+    return float(20.0 * np.log10(peak / rms))
+
+
 def normalize(y):
     # https://librosa.org/doc/main/generated/librosa.util.normalize.html
     y_normalized = librosa.util.normalize(y)

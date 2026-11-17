@@ -35,6 +35,9 @@ docs/_build/
 /docs/CONTRIBUTING.md
 /docs/DEPENDENCY_LICENSES.md
 
+# The per-user virtual environment INSTALLATION.md creates inside the folder
+.venv/
+
 # Packaging (pip install -e .) and test/coverage artifacts
 *.egg-info/
 build/

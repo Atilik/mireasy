@@ -32,10 +32,13 @@ def test_env_yml_is_compile_free_and_git_free():
 
 
 def test_installation_md_mentions_the_moving_parts():
+    # pip + venv is the main route (2026-11-17, his decision); conda is the
+    # alternative for people who already use it.
     s = _read("INSTALLATION.md")
-    for needle in ("Miniconda", "environment.yml", "conda env create",
-                   "conda activate mireasy", "download_models.py",
-                   "run_tests.py", "python -m mireasy",
+    for needle in ("python.org", "-m venv", 'pip install -e ".[test]"',
+                   "Install Certificates.command",      # python.org Mac gotcha
+                   "download_models.py", "run_tests.py", "mireasy sample_stimuli/",
+                   "conda env create -f environment.yml", "conda activate mireasy",
                    "Apple Silicon", "macOS 15"):
         assert needle in s, f"INSTALLATION.md no longer mentions: {needle}"
 

@@ -46,9 +46,9 @@ MIR, so knowing *why* shapes *what* we build.
 Developers are welcome — the workflow is standard:
 
 1. **Fork** the repository and create a branch off `main`.
-2. Build the environment: `conda env create -f environment.yml` (Apple Silicon
-   macOS; see README for platform notes), then
-   `conda activate mireasy && python download_models.py`.
+2. Set up as in [INSTALLATION.md](INSTALLATION.md): a virtual environment,
+   `pip install -e ".[test]"`, then `python download_models.py` (or the conda
+   route with `environment.yml`, which pins the exact tested versions).
 3. Make your change. Please match the surrounding code style and keep the
    test suite's design rules:
    - `python run_tests.py` must pass — the default suite is **offline and
