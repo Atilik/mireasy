@@ -53,7 +53,8 @@ Dependency licenses <DEPENDENCY_LICENSES>
 ```
 """
 
-_LINK = re.compile(r"(?<!!)\[([^\]]*)\]\(([^)\s]+)\)")
+# A link whose label is plain text, or a badge: a link whose label is an image.
+_LINK = re.compile(r"(?<!!)\[((?:[^\[\]]|!\[[^\]]*\]\([^)]*\))*)\]\(([^)\s]+)\)")
 
 
 def _fix_links(text):
