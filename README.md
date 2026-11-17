@@ -2,7 +2,7 @@
 
 [![tests](https://github.com/Atilik/mireasy/actions/workflows/tests.yml/badge.svg)](https://github.com/Atilik/mireasy/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/Atilik/mireasy/branch/main/graph/badge.svg)](https://codecov.io/gh/Atilik/mireasy)
-[![docs](https://app.readthedocs.org/projects/mireasy/badge/?version=latest)](https://mireasy.readthedocs.io/en/latest/)
+[![docs](https://img.shields.io/readthedocs/mireasy?label=docs)](https://mireasy.readthedocs.io/en/latest/)
 [![license](https://img.shields.io/github/license/Atilik/mireasy)](LICENSE.md)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 

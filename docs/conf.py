@@ -59,7 +59,7 @@ _LINK = re.compile(r"(?<!!)\[((?:[^\[\]]|!\[[^\]]*\]\([^)]*\))*)\]\(([^)\s]+)\)"
 
 def _fix_links(text):
     """Keep links between the synced docs working; send everything else that
-    points into the repository (folders, LICENSE.md, wheels/...) to GitHub."""
+    points into the repository (folders, LICENSE.md, scripts, ...) to GitHub."""
     local = {name.lower() for name in SYNCED.values()}
 
     def repl(m):

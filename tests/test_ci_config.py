@@ -37,7 +37,8 @@ def test_workflow_parses_and_triggers_on_main_and_prs():
 
 def test_matrix_covers_the_supported_platforms_and_pythons():
     linux, mac = _job("test-linux"), _job("test-macos")
-    assert linux["runs-on"] == "ubuntu-latest" and mac["runs-on"] == "macos-latest"
+    assert linux["runs-on"] == "ubuntu-latest"
+    assert mac["runs-on"] == "macos-latest"      # floating on purpose (his call, 2026-11-17)
     for job in (linux, mac):
         assert job["strategy"]["matrix"]["python"] == PYTHONS
         assert job["strategy"]["fail-fast"] is False

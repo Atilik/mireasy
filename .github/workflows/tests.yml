@@ -77,6 +77,9 @@ jobs:
   # macOS jobs at once got three of them dropped unstarted ("not acquired by
   # Runner … after multiple attempts") on consecutive runs. One request at a
   # time is served; the four versions therefore run sequentially (~3 min each).
+  # `macos-latest` floats (macOS 26 arm64 since Nov 2026, like mirdata/librosa
+  # use). When GitHub's Mac pool is short, jobs can be dropped unstarted —
+  # that is a capacity issue, not a test failure: "Re-run failed jobs".
   test-macos:
     name: macOS · Python ${{ matrix.python }}
     runs-on: macos-latest

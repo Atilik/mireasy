@@ -34,9 +34,7 @@ def _env_yml_pip_names():
             item = s.strip()
             if not item.startswith("- "):
                 continue                      # comment or blank
-            item = item[2:].strip()
-            wheel = re.match(r"\./wheels/([A-Za-z0-9_]+)-", item)
-            names.add(_name(wheel.group(1)) if wheel else _name(item))
+            names.add(_name(item[2:].strip()))      # 'beat_this @ https://…' -> beat-this
     return names
 
 
