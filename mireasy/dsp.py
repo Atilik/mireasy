@@ -257,10 +257,12 @@ def compute_spectral_features(y, sr, n_fft=2048, hop_length=512):
     """
     Compute standard spectral descriptors as per-frame arrays.
 
-    Returns dict with keys:
-        spectral_centroid, spectral_bandwidth, spectral_rolloff,
-        spectral_flatness, zcr
-    Each value is a 1-D numpy array (one value per frame).
+    Returns
+    -------
+    dict
+        Keys ``spectral_centroid``, ``spectral_bandwidth``, ``spectral_rolloff``,
+        ``spectral_flatness``, ``zcr``. Each value is a 1-D numpy array (one
+        value per frame).
     """
     if y.ndim == 2:
         y = librosa.to_mono(y)

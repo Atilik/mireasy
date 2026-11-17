@@ -29,8 +29,8 @@ class Stimulus:
     """
     Wraps a single audio file and provides analysis attributes and methods.
 
-    Usage
-    -----
+    **Usage**::
+
         s = Stimulus("path/to/audio.wav")
         print(s)          # shows filename, BPM, duration, channels
         s.play()          # listen in a notebook
@@ -815,23 +815,28 @@ class Stimulus:
         """
         Like process_and_save, but computes only the selected feature groups.
 
-        Groups
-        ------
-        rhythm      : beats, BPM, meter (BEAT THIS! only — fast)
-        syncopation : Demucs drum separation + both Toussaint syncopation
-                      scores (slow; auto-detects beats first if needed)
-        genre       : Essentia genre / voice-instrumental / mood classifiers
-        pitch       : CREPE pitch tracking
-        key         : key / scale detection
-        spectral    : spectral descriptors (centroid, bandwidth, rolloff,
-                      flatness, ZCR)
+        **Groups**
+
+        rhythm
+            beats, BPM, meter (BEAT THIS! only — fast)
+        syncopation
+            Demucs drum separation + both Toussaint syncopation scores
+            (slow; auto-detects beats first if needed)
+        genre
+            Essentia genre / voice-instrumental / mood classifiers
+        pitch
+            CREPE pitch tracking
+        key
+            key / scale detection
+        spectral
+            spectral descriptors (centroid, bandwidth, rolloff, flatness, ZCR)
 
         Basics (duration, loudness, RMS, fluctuation, irregularity) are
         always included in the CSV.
 
         Example
         -------
-            stimulus.partial_process_save(rhythm=True, pitch=True)
+        >>> stimulus.partial_process_save(rhythm=True, pitch=True)
         """
         if not any([rhythm, syncopation, genre, pitch, key, spectral]):
             print("No feature group selected — saving basics only.\n"
@@ -1143,8 +1148,8 @@ class Session:
         Select a specific Stimulus by index (1-based) or name.
         Automatically updates the 'stimulus' variable in the interactive shell.
 
-        Usage
-        -----
+        **Usage**::
+
             session(1)          # focus on first item
             session("song")     # focus by partial name match
             session()           # list all items
@@ -1386,8 +1391,8 @@ class Participant:
         Select a specific session by index (1-based) or name.
         Auto-updates 'session' in the interactive shell.
 
-        Usage
-        -----
+        **Usage**::
+
             participant(1)        # focus on first session
             participant("session") # focus by partial folder name
             participant()         # list all sessions

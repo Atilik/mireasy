@@ -1,0 +1,28 @@
+/* MIReasy palette: a light purple accent on the pydata-sphinx-theme.
+   Change the hex values below to retune; the theme picks them up as-is. */
+
+html[data-theme="light"] {
+  --pst-color-primary: #7a5bd6;          /* links, active nav, focus rings */
+  --pst-color-secondary: #b39ddb;
+  --pst-color-link: #6b4cc7;
+  --pst-color-link-hover: #4f33a8;
+  --pst-color-inline-code: #6b4cc7;
+  --pst-color-inline-code-links: #6b4cc7;
+  --pst-color-on-background: #f7f3fd;    /* navbar / sidebar tint */
+  --pst-color-background: #fdfcff;
+  --pst-color-target: #ede6fb;           /* highlighted anchor target */
+}
+
+html[data-theme="dark"] {
+  --pst-color-primary: #c4b3f1;
+  --pst-color-secondary: #8e7cc3;
+  --pst-color-link: #cfbff8;
+  --pst-color-link-hover: #e3d9fb;
+  --pst-color-inline-code: #cfbff8;
+  --pst-color-inline-code-links: #cfbff8;
+}
+
+/* Soft purple band behind the README badges / page headers */
+.bd-header {
+  box-shadow: 0 1px 0 rgba(122, 91, 214, 0.18);
+}

@@ -1,0 +1,7 @@
+# Documentation build only (Read the Docs + the CI docs job). Runtime
+# dependencies are mocked in docs/conf.py, so nothing heavy is needed here.
+# Keep in sync with the "docs" extra in pyproject.toml (tests check this).
+sphinx>=7.3,<9
+pydata-sphinx-theme>=0.15,<1
+myst-parser>=3,<5
+sphinx-copybutton>=0.5,<1
