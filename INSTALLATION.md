@@ -78,7 +78,7 @@ This should end with a line like `… passed` and no failures. Then try MIReasy
 on the five test songs that come with it:
 
 ```bash
-mireasy sample_stimuli/
+mireasy --demo
 ```
 
 You are in the MIReasy shell. Type `session.print()` to list the songs,
@@ -131,7 +131,7 @@ If you already work with conda or Miniconda, the repository ships an
 conda env create -f environment.yml
 conda activate mireasy
 python download_models.py
-python -m mireasy sample_stimuli/
+mireasy --demo
 ```
 
 Everything else in this guide applies unchanged.

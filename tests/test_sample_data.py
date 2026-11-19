@@ -1,8 +1,10 @@
-"""Guards for the bundled sample dataset (sample_stimuli/). Offline and fast.
+"""Guards for the bundled sample dataset (mireasy/sample_stimuli/). Offline and fast.
 
 The samples are the README's "try it right now" path — if they rot, the first
 thing a new user touches breaks. They ship as MP3 (issue #15: six times
-smaller than WAV for people downloading the repository).
+smaller than WAV for people downloading the repository) and live inside the
+package since 2026-11-19 so `mireasy --demo` works after `pip install mireasy`
+(issue #21).
 """
 import os
 import glob
@@ -10,8 +12,10 @@ import glob
 import numpy as np
 import soundfile as sf
 
+from mireasy.paths import SAMPLE_STIMULI_DIR
+
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SAMPLES = os.path.join(REPO, "sample_stimuli")
+SAMPLES = SAMPLE_STIMULI_DIR
 
 EXPECTED = [
     "01_steady_drums_120bpm.mp3",
@@ -20,6 +24,16 @@ EXPECTED = [
     "04_chords_c_major_80bpm.mp3",
     "05_quiet_ambient_no_drums.mp3",
 ]
+
+
+def test_samples_live_inside_the_package_and_ship_in_the_wheel():
+    assert SAMPLES == os.path.join(REPO, "mireasy", "sample_stimuli")
+    assert not os.path.exists(os.path.join(REPO, "sample_stimuli")), \
+        "the sample folder moved into the package; no second copy at the root"
+    import tomllib
+    with open(os.path.join(REPO, "pyproject.toml"), "rb") as f:
+        data = tomllib.load(f)["tool"]["setuptools"]["package-data"]["mireasy"]
+    assert "sample_stimuli/*.mp3" in data
 
 
 def test_sample_folder_is_complete():

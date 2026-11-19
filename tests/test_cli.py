@@ -67,8 +67,31 @@ def run_main(monkeypatch):
 def test_main_without_args_prints_usage(run_main, capsys):
     rc, ns, events = run_main([])
     assert rc == 1
-    assert "Usage: python -m mireasy" in capsys.readouterr().out
+    out = capsys.readouterr().out
+    assert "Usage: mireasy" in out and "--demo" in out
     assert events == []                        # nothing loaded, no shell
+    assert run_main(["--help"])[0] == 1
+
+
+def test_junk_subfolders_do_not_turn_a_session_into_a_participant(session_folder):
+    # Regression (2026-11-19): the installed demo folder gained a __pycache__
+    # subfolder and loaded as a participant with one empty session. __MACOSX
+    # (zip archives) is the same trap for users' own folders.
+    from mireasy.mireasy import Session, mireasy as load
+    for junk in ("__pycache__", "__MACOSX", ".ipynb_checkpoints"):
+        os.makedirs(os.path.join(session_folder, junk), exist_ok=True)
+    obj = load(session_folder)
+    assert isinstance(obj, Session) and len(obj) > 0
+
+
+def test_main_demo_opens_the_bundled_samples(run_main, capsys):
+    # `mireasy --demo` must work after a plain `pip install mireasy` (issue #21):
+    # the five synthetic songs ship inside the package.
+    from mireasy.mireasy import Session
+    rc, ns, events = run_main(["--demo"])
+    assert rc == 0 and events == ["clear", "interact"]
+    assert isinstance(ns["session"], Session) and len(ns["session"]) == 5
+    assert ns["stimulus"].audio_file_name == "01_steady_drums_120bpm.mp3"
 
 
 def test_main_clears_before_loading(participant_folder, sine_wav, run_main, capsys):

@@ -76,8 +76,16 @@ packages = ["mireasy"]
 [tool.setuptools.dynamic]
 version = { attr = "mireasy.__version__" }
 
+[tool.setuptools.package-data]
+# The five synthetic demo songs (480 KB, MP3) ship inside the wheel so
+# `mireasy --demo` works after a plain `pip install mireasy`. Only the audio:
+# a .py file here would get byte-compiled on install, and the resulting
+# __pycache__ subfolder made the loader read the demo as a participant folder.
+# The regeneration script stays in the repository for provenance.
+mireasy = ["sample_stimuli/*.mp3"]
+
 [tool.setuptools.exclude-package-data]
-# The Essentia models (~45 MB, downloaded by download_models.py) never ship
+# The Essentia models (~45 MB, fetched by mireasy-download-models) never ship
 # inside the package.
 mireasy = ["models/*"]
 

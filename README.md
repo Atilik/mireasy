@@ -42,23 +42,24 @@ cd /path/to/mireasy
 python -c 'from mireasy import mireasy; mireasy("/path/to/my_stimuli").process_and_save(".")'
 ```
 
-You get a CSV with one row per stimulus and 44 columns of measures. `bpm` is your
+You get a CSV with one row per stimulus and 45 columns of measures. `bpm` is your
 tempo, `loudness_lufs` your loudness, and `spectral_centroid_mean` your spectral
 brightness.
 
-**Try it right now:** the repo ships [`sample_stimuli/`](sample_stimuli/) —
+**Try it right now:** MIReasy ships [`mireasy/sample_stimuli/`](mireasy/sample_stimuli/) —
 five fully synthetic test "songs" (no copyrighted audio; tempo and key are in
-the filenames so you can check the tool). Analyzing that folder gives:
+the filenames so you can check the tool). `mireasy --demo` opens them, and
+analyzing that folder gives:
 
 | filename | bpm | syncopation_score | key | scale | loudness_lufs | spectral_centroid_mean | … |
 |---|---|---|---|---|---|---|---|
-| 01_steady_drums_120bpm.wav | 120.0 | 52 | F# | minor | −20.2 | 4505 | … |
-| 02_syncopated_drums_95bpm.wav | 187.5 † | 61 | F# | major | −17.3 | 4449 | … |
-| 03_melody_a_minor_140bpm.wav | 142.9 | 44 | A | minor | −17.3 | 974 | … |
-| 04_chords_c_major_80bpm.wav | 81.1 | 38 | C | major | −16.7 | 787 | … |
-| 05_quiet_ambient_no_drums.wav | 25.6 ‡ | 0 | A | major | −31.2 | 557 | … |
+| 01_steady_drums_120bpm.mp3 | 120.0 | 52 | F# | minor | −20.2 | 5248 | … |
+| 02_syncopated_drums_95bpm.mp3 | 187.5 † | 57 | F# | major | −17.3 | 5464 | … |
+| 03_melody_a_minor_140bpm.mp3 | 142.9 | 44 | A | minor | −17.3 | 997 | … |
+| 04_chords_c_major_80bpm.mp3 | 81.1 | 31 | C | major | −16.7 | 861 | … |
+| 05_quiet_ambient_no_drums.mp3 | 81.1 ‡ | 0 | A | major | −31.2 | 251 | … |
 
-(…plus genre, mood, pitch, and more — 44 columns in total, grouped by topic;
+(…plus genre, mood, pitch, and more — 45 columns in total, grouped by topic;
 see [DOCUMENTATION.md](DOCUMENTATION.md) for every column's meaning.)
 
 The sample set is deliberately imperfect, because real results are too:
@@ -76,7 +77,7 @@ which stimuli is part of using MIR responsibly.
 - **Stem Separation**: Drum separation using Demucs.
 - **Timbre & Dynamics**: LUFS loudness, RMS energy, spectral irregularity, and fluctuation strength.
 - **Harmony & Pitch**: Key and scale extraction (Essentia), and frame-level pitch tracking (CREPE).
-- **Genre & Mood**: Pre-trained deep learning classifiers for genre, danceability, mood, and voice/instrumental detection (Essentia).
+- **Genre & Mood**: Pre-trained deep learning classifiers for genre, mood, and voice/instrumental detection (Essentia).
 - **Interactive Player**: A built-in GUI player (`play()`) to view waveforms, spectrograms (linear/log/mel), and pitch contours, while sonifying detected beats and onsets over the audio.
 - **Batch Processing**: Automatic process and save everything as CSV (`process_and_save()`).
 
@@ -92,23 +93,22 @@ Intel Macs are not supported. Linux is expected to work but is untested — for
 audio playback, install PortAudio (`sudo apt install libportaudio2`). Windows
 is not supported natively (use WSL2).
 
-**Quickstart for terminal users** (needs [conda](https://docs.conda.io/en/latest/miniconda.html)
-and git; nothing compiles — the one non-PyPI dependency ships as a prebuilt
-wheel in `wheels/`):
+**Quickstart for terminal users** (needs Python 3.11+ and git; everything
+comes from PyPI, nothing compiles):
 
 ```bash
 git clone https://github.com/Atilik/mireasy.git
 cd mireasy
-conda env create -f environment.yml
-conda activate mireasy
-python download_models.py     # optional: enables genre/mood/pitch features
+pip install -e ".[test]"
+mireasy-download-models       # optional: enables genre/mood/pitch features (~45 MB)
 python run_tests.py           # should finish with "… passed" and no failures
-python -m mireasy /path/to/audio/
+mireasy --demo                # the five synthetic test songs
+mireasy /path/to/audio/
 ```
 
 **Notes**
-- Reinstalling? `conda env remove -n mireasy` first — `conda env create` won't
-  overwrite an existing environment.
+- conda users: `conda env create -f environment.yml` installs the exact tested
+  versions instead of the `pip install` line.
 - On first analysis run, the beat tracker (BEAT THIS!) and Demucs download
   their own checkpoints automatically (~100 MB, one time) — so the first song
   takes longer and needs an internet connection.
@@ -236,9 +236,9 @@ python run_tests.py
 MIREASY_RUN_SLOW=1 python run_tests.py
 ```
 
-Tests that need the Essentia classifier models (`mireasy/models/*.pb`)
-skip automatically while those files are absent — run `python download_models.py`
-to activate them.
+Tests that need the Essentia classifier models skip automatically while those
+files are absent — run `mireasy-download-models` (or `python download_models.py`
+in the repository) to activate them.
 
 ---
 

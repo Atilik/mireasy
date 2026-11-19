@@ -21,8 +21,11 @@ even when the heavy packages are missing or broken.
 import os
 import sys
 
+_PACKAGE_DIR = os.path.dirname(os.path.abspath(__file__))
 EFFNET_FILE = "discogs-effnet-bs64-1.pb"
-PACKAGE_MODELS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models")
+PACKAGE_MODELS_DIR = os.path.join(_PACKAGE_DIR, "models")
+# The five synthetic demo songs shipped with the package (`mireasy --demo`).
+SAMPLE_STIMULI_DIR = os.path.join(_PACKAGE_DIR, "sample_stimuli")
 
 
 def user_cache_dir():

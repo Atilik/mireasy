@@ -1,0 +1,82 @@
+name: publish
+
+# Builds the wheel + sdist and uploads them with PyPI "trusted publishing"
+# (OpenID Connect): no API token is stored anywhere. One-time setup on
+# pypi.org / test.pypi.org: project "mireasy" → Publishing → add a GitHub
+# publisher with owner Atilik, repository mireasy, workflow publish.yml and
+# the environment name used below (pypi / testpypi).
+#
+#   Dry run:  Actions → publish → "Run workflow" (target: testpypi)
+#   Release:  publish a GitHub Release whose tag is v<version> (e.g. v0.1.0)
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Where to upload"
+        type: choice
+        options: [testpypi, pypi]
+        default: testpypi
+
+jobs:
+  build:
+    name: build wheel + sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build
+        run: |
+          python -m pip install --upgrade pip build twine
+          python -m build
+          python -m twine check dist/*
+
+      - name: Tag must match mireasy.__version__
+        if: github.event_name == 'release'
+        run: |
+          version=$(python -c "import mireasy; print(mireasy.__version__)")
+          test "${GITHUB_REF_NAME}" = "v${version}" || {
+            echo "release tag ${GITHUB_REF_NAME} does not match package version ${version}"; exit 1; }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish-testpypi:
+    name: upload to TestPyPI
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi'
+    runs-on: ubuntu-latest
+    environment: testpypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  publish-pypi:
+    name: upload to PyPI
+    needs: build
+    if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.target == 'pypi')
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1

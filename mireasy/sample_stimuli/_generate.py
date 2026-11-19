@@ -7,7 +7,7 @@ ground truth (tempo, key) so users can check mireasy's output against it.
 Files are written as MP3 (libsndfile's best quality, ~110 kbit/s mono) so the
 folder stays small for people downloading the repository; WAV was 6x larger.
 
-Run:  python sample_stimuli/_generate.py
+Run (from the repository root):  python mireasy/sample_stimuli/_generate.py
 """
 import numpy as np
 import soundfile as sf

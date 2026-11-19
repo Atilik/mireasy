@@ -33,7 +33,7 @@ repository or website).
 | [beat_this](https://github.com/CPJKU/beat_this) | 1.1.0 | **MIT** (explicitly covers code *and* published model weights) | Beat, downbeat and meter detection |
 | [demucs](https://github.com/adefossez/demucs) | 4.0.1 | **MIT** (code; README does not state a license for the htdemucs weights — see open questions) | Drum separation for syncopation |
 | [essentia-tensorflow](https://essentia.upf.edu) | 2.1b6.dev1389 | **AGPL-3.0** (code; wheel bundles TensorFlow, Apache-2.0) | Key detection, CREPE pitch, genre/mood classifiers |
-| Essentia pretrained models | per `download_models.py` | **CC BY-NC-SA 4.0** ("All the models created by the MTG are licensed under CC BY-NC-SA 4.0"; proprietary license available on request) | Genre, mood, danceability, voice/instrumental, CREPE pitch |
+| Essentia pretrained models | fetched by `mireasy-download-models` (not shipped in the package) | **CC BY-NC-SA 4.0** ("All the models created by the MTG are licensed under CC BY-NC-SA 4.0"; proprietary license available on request) | Genre, mood, voice/instrumental, CREPE pitch |
 | [librosa](https://librosa.org) | 0.11.0 | ISC | Audio loading, spectral features |
 | [mir_eval](https://github.com/craffel/mir_eval) | 0.8.2 | MIT | Rhythm metric utilities |
 | [pyloudnorm](https://github.com/csteinmetz1/pyloudnorm) | 0.2.0 | MIT | LUFS loudness |

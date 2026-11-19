@@ -1451,8 +1451,9 @@ class Participant:
 
 def _is_hidden(name):
     """Hidden/system entries to ignore: .DS_Store, .ipynb_checkpoints,
-    macOS '._' resource files, and __MACOSX folders from zip archives."""
-    return name.startswith(".") or name == "__MACOSX"
+    macOS '._' resource files, __MACOSX folders from zip archives, and
+    __pycache__ (pip byte-compiles any .py next to the audio on install)."""
+    return name.startswith(".") or name in ("__MACOSX", "__pycache__")
 
 
 def _folder_has_subdirs(path):
@@ -1504,18 +1505,22 @@ def main(argv=None):
     Command-line entry point: load a file or folder, then open an interactive
     shell with `participant` / `session` / `stimulus` ready to use.
 
-        python -m mireasy <audio_file_or_folder>
+        mireasy <audio_file_or_folder>
+        mireasy --demo          # the five synthetic songs shipped with the package
     """
     import sys, code
+    from .paths import SAMPLE_STIMULI_DIR
     argv = sys.argv[1:] if argv is None else list(argv)
-    if len(argv) < 1:
-        print("Usage: python -m mireasy <audio_file_or_folder>")
+    if len(argv) < 1 or argv[0] in ("-h", "--help"):
+        print("Usage: mireasy <audio_file_or_folder>\n"
+              "       mireasy --demo    (the five synthetic test songs shipped with mireasy)")
         return 1
+    path = SAMPLE_STIMULI_DIR if argv[0] == "--demo" else argv[0]
 
     # Clear the screen BEFORE loading, so warnings printed while loading
     # (skipped files, ignored top-level audio) stay visible.
     clear()
-    obj = mireasy(argv[0])
+    obj = mireasy(path)
 
     # Set up convenient variables for the interactive shell
     ns = {

@@ -39,7 +39,7 @@ def test_installation_md_mentions_the_moving_parts():
     for needle in ("python.org", 'install -e ".[test]"',
                    "Install Certificates.command",      # python.org Mac gotcha
                    "externally-managed-environment",    # the case that needs a venv
-                   "download_models.py", "run_tests.py", "mireasy sample_stimuli/",
+                   "download_models.py", "run_tests.py", "mireasy --demo",
                    "conda env create -f environment.yml", "conda activate mireasy",
                    "Apple Silicon", "macOS 15"):
         assert needle in s, f"INSTALLATION.md no longer mentions: {needle}"
