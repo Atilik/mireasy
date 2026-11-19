@@ -17,6 +17,9 @@ env:
   # CI runners have no display: never let matplotlib try to open a window.
   MPLBACKEND: Agg
   PYTHONUNBUFFERED: "1"
+  # Keep the Essentia models inside the checkout so the cache steps below
+  # (path: mireasy/models) keep hitting; users get a per-user cache folder.
+  MIREASY_MODELS_DIR: ${{ github.workspace }}/mireasy/models
 
 jobs:
   test-linux:

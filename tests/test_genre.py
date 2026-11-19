@@ -10,12 +10,13 @@ import pytest
 import soundfile as sf
 
 from mireasy.genre import (
-    detect_key, _load_audio_16k, _EFFNET_PATH, _CREPE_PATH,
+    detect_key, _load_audio_16k, _model_path, _CREPE_FILE,
 )
+from mireasy.paths import EFFNET_FILE
 import os
 
-MODELS_PRESENT = os.path.isfile(_EFFNET_PATH)
-CREPE_PRESENT = os.path.isfile(_CREPE_PATH)
+MODELS_PRESENT = os.path.isfile(_model_path(EFFNET_FILE))
+CREPE_PRESENT = os.path.isfile(_model_path(_CREPE_FILE))
 SR = 44100
 
 

@@ -32,7 +32,5 @@ dependencies:
       - essentia-tensorflow==2.1b6.dev1389
       - ipython>=8          # imported by rhythm.py; conda's ipykernel already provides it
       - pytest==8.4.2
-      # BEAT THIS! beat tracker (ISMIR 2024) is not on PyPI: installed from its
-      # GitHub tag archive, same as pyproject.toml. Pure Python — no git and no
-      # compiler needed on the user's machine.
-      - beat_this @ https://github.com/CPJKU/beat_this/archive/refs/tags/v1.1.0.zip
+      # BEAT THIS! beat tracker (ISMIR 2024), pure-Python wheel from PyPI.
+      - beat-this==1.1.0

@@ -37,3 +37,16 @@ measure on your own arrays rather than the full object model.
 .. automodule:: mireasy.core
    :members:
 ```
+
+## Model files
+
+Where the downloaded Essentia models live, and the `mireasy-download-models`
+command that fetches them.
+
+```{eval-rst}
+.. automodule:: mireasy.paths
+   :members:
+
+.. automodule:: mireasy.download_models
+   :members: main
+```

@@ -18,11 +18,18 @@ from essentia.standard import MonoLoader
 from essentia.standard import KeyExtractor
 from essentia.standard import PitchCREPE
 
-# Model paths
-_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-_MODELS_DIR = os.path.join(_SCRIPT_DIR, "models")
+from .paths import EFFNET_FILE, models_dir
 
-_EFFNET_PATH = os.path.join(_MODELS_DIR, "discogs-effnet-bs64-1.pb")
+# Model files live in mireasy.paths.models_dir() (per-user cache, or the
+# package folder / $MIREASY_MODELS_DIR — see that module). Downloaded by the
+# `mireasy-download-models` command.
+_DOWNLOAD_HINT = ("run: mireasy-download-models  "
+                  "(in a source checkout: python download_models.py)")
+
+
+def _model_path(filename):
+    return os.path.join(models_dir(), filename)
+
 
 # Classification heads  (all use Discogs-EffNet embeddings)
 _HEAD_FILES = {
@@ -34,7 +41,7 @@ _HEAD_FILES = {
     "mood_relaxed":     "mood_relaxed-discogs-effnet-1",
 }
 
-_CREPE_PATH = os.path.join(_MODELS_DIR, "crepe-medium-1.pb")
+_CREPE_FILE = "crepe-medium-1.pb"
 
 # Lazy caches
 _embedding_model = None
@@ -62,15 +69,14 @@ def _get_embedding_model():
         return _embedding_model
     _silence_essentia()
 
-    if not os.path.isfile(_EFFNET_PATH):
+    effnet_path = _model_path(EFFNET_FILE)
+    if not os.path.isfile(effnet_path):
         raise FileNotFoundError(
-            f"model file {os.path.basename(_EFFNET_PATH)} not installed — "
-            f"run: python download_models.py"
+            f"model file {EFFNET_FILE} not installed — {_DOWNLOAD_HINT}"
         )
 
-    
     _embedding_model = TensorflowPredictEffnetDiscogs(
-        graphFilename=_EFFNET_PATH,
+        graphFilename=effnet_path,
         output="PartitionedCall:1"
     )
     return _embedding_model
@@ -84,12 +90,12 @@ def _get_head_model(name):
     _silence_essentia()
 
     base = _HEAD_FILES[name]
-    pb_path = os.path.join(_MODELS_DIR, f"{base}.pb")
-    json_path = os.path.join(_MODELS_DIR, f"{base}.json")
+    pb_path = _model_path(f"{base}.pb")
+    json_path = _model_path(f"{base}.json")
 
     if not os.path.isfile(pb_path):
         raise FileNotFoundError(
-            f"model file {base}.pb not installed — run: python download_models.py"
+            f"model file {base}.pb not installed — {_DOWNLOAD_HINT}"
         )
 
     # genre_discogs400 uses different node names than the others
@@ -224,13 +230,12 @@ def detect_pitch_crepe(audio_file_path):
     _silence_essentia()
 
     if _crepe_model is None:
-        if not os.path.isfile(_CREPE_PATH):
+        crepe_path = _model_path(_CREPE_FILE)
+        if not os.path.isfile(crepe_path):
             raise FileNotFoundError(
-                f"model file {os.path.basename(_CREPE_PATH)} not installed — "
-                f"run: python download_models.py"
+                f"model file {_CREPE_FILE} not installed — {_DOWNLOAD_HINT}"
             )
-        
-        _crepe_model = PitchCREPE(graphFilename=_CREPE_PATH)
+        _crepe_model = PitchCREPE(graphFilename=crepe_path)
 
     audio = _load_audio_16k(audio_file_path)
     time, frequency, confidence, activations = _crepe_model(audio)

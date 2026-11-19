@@ -17,16 +17,17 @@ def _read(name):
 
 def test_env_yml_is_compile_free_and_git_free():
     # Regression: git-URL deps need git, which fresh Macs lack, and compiled
-    # deps broke on user machines (madmom, since removed). BEAT THIS! installs
-    # from its GitHub tag archive (pure Python) in BOTH recipes; nothing may
-    # need git, a compiler, or a wheel bundled in the repository.
+    # deps broke on user machines (madmom, since removed). Since 2026-11-19
+    # BEAT THIS! comes from PyPI in BOTH recipes (issue #21: PyPI rejects
+    # direct-URL dependencies); nothing may need git, a compiler, a URL, or a
+    # wheel bundled in the repository.
     yml = _read("environment.yml")
     assert "git+" not in yml, "a git dependency crept back into environment.yml"
     assert "madmom" not in yml and "cython" not in yml, \
         "madmom (or its build dep cython) crept back into environment.yml"
-    archive = "beat_this @ https://github.com/CPJKU/beat_this/archive/refs/tags/v1.1.0.zip"
-    assert archive in yml, "environment.yml must install beat_this from the tag archive"
-    assert archive in _read("pyproject.toml"), "pyproject.toml and environment.yml disagree on beat_this"
+    assert "beat-this==" in yml, "environment.yml must pin beat-this from PyPI"
+    for name in ("environment.yml", "pyproject.toml"):
+        assert "@ https://" not in _read(name), f"{name} has a direct-URL dependency again"
     assert "./wheels" not in yml and not os.path.isdir(os.path.join(REPO, "wheels")), \
         "the bundled-wheels folder was removed on 2026-11-17; nothing should reference it"
 

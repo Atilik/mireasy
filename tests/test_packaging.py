@@ -43,6 +43,7 @@ def test_pyproject_names_the_package_and_entry_point():
     assert p["name"] == "mireasy"
     assert p["requires-python"] == ">=3.11"
     assert p["scripts"]["mireasy"] == "mireasy.mireasy:main"
+    assert p["scripts"]["mireasy-download-models"] == "mireasy.download_models:main"
 
 
 def test_version_is_a_single_source_of_truth():
@@ -53,13 +54,16 @@ def test_version_is_a_single_source_of_truth():
     assert re.fullmatch(r"\d+\.\d+\.\d+(\.dev\d+)?", mireasy.__version__), mireasy.__version__
 
 
-def test_no_git_or_compiled_dependencies():
+def test_no_git_url_or_compiled_dependencies():
+    # PyPI rejects uploads whose dependencies point at URLs (PEP 440 direct
+    # references), so every dependency must be a plain PyPI name — that is the
+    # gate for `pip install mireasy` (issue #21). beat-this is on PyPI since 1.1.0.
     deps = _pyproject()["project"]["dependencies"]
     assert not any("git+" in d for d in deps), "a git dependency crept into pyproject.toml"
+    assert not any(" @ " in d for d in deps), "a direct-URL dependency crept into pyproject.toml"
     assert not any(_name(d) == "madmom" for d in deps)
     bt = [d for d in deps if _name(d) == "beat-this"]
-    assert len(bt) == 1 and "https://github.com/CPJKU/beat_this/archive/refs/tags/v1.1.0.zip" in bt[0], \
-        "beat_this must install from its tag archive (no git, no compiler)"
+    assert len(bt) == 1 and ">=1.1" in bt[0], "beat-this must come from PyPI, 1.1 or newer"
 
 
 def test_essentia_has_a_python_314_rule():

@@ -48,9 +48,10 @@ dependencies = [
   # Python 3.14 wheels exist only from build dev1438 onward.
   "essentia-tensorflow==2.1b6.dev1389; python_version < '3.14'",
   "essentia-tensorflow==2.1b6.dev1438; python_version >= '3.14'",
-  # BEAT THIS! (MIT) is not on PyPI: installed from the GitHub tag archive —
-  # pure Python, so no git and no compiler are needed on any platform.
-  "beat_this @ https://github.com/CPJKU/beat_this/archive/refs/tags/v1.1.0.zip",
+  # BEAT THIS! (MIT) beat tracker, from PyPI (pure-Python wheel). PyPI rejects
+  # packages with direct-URL dependencies, so this line is what makes a
+  # `pip install mireasy` release possible (issue #21).
+  "beat-this>=1.1,<2",
 ]
 
 [project.optional-dependencies]
@@ -62,6 +63,7 @@ docs = ["sphinx>=7.3,<9", "pydata-sphinx-theme>=0.15,<1", "myst-parser>=3,<5",
 
 [project.scripts]
 mireasy = "mireasy.mireasy:main"
+mireasy-download-models = "mireasy.download_models:main"
 
 [project.urls]
 Homepage = "https://github.com/Atilik/mireasy"

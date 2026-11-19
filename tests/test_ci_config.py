@@ -68,6 +68,16 @@ def test_ci_installs_from_pyproject_and_runs_the_suite():
     assert "--cov=mireasy" in _runs("test-linux")
 
 
+def test_ci_keeps_the_models_inside_its_cache_path():
+    # The models moved to a per-user cache folder (issue #21); CI pins them back
+    # into the checkout so the actions/cache steps (path: mireasy/models) still hit.
+    wf = _workflow()
+    assert wf["env"]["MIREASY_MODELS_DIR"] == "${{ github.workspace }}/mireasy/models"
+    for job in ("test-linux", "test-macos", "slow"):
+        cache = [s for s in _steps(job) if s.get("uses", "").startswith("actions/cache")]
+        assert cache and "mireasy/models" in cache[0]["with"]["path"], job
+
+
 def test_ci_is_headless_safe_and_cpu_only_on_linux():
     wf = _workflow()
     assert wf["env"]["MPLBACKEND"] == "Agg"
