@@ -96,3 +96,8 @@ source = ["mireasy"]
 # only hide how well the analysis code is tested. Measured by hand when the
 # GUI changes.
 omit = ["mireasy/play.py", "mireasy/plot.py"]
+
+[tool.coverage.report]
+# The `if __name__ == "__main__":` guards only run when a file is executed
+# directly, never under pytest; they are not untested logic.
+exclude_also = ['if __name__ == "__main__":']
