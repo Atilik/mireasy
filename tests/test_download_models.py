@@ -23,7 +23,7 @@ NETWORK = pytest.mark.skipif(
 
 
 def test_root_script_is_a_wrapper_around_the_package_command():
-    # INSTALLATION.md documents `python download_models.py`; the real code is
+    # The installation page documents `python download_models.py`; the real code is
     # the package module, so the two can never drift apart.
     spec = importlib.util.spec_from_file_location(
         "download_models_wrapper", os.path.join(REPO, "download_models.py"))

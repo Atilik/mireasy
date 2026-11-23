@@ -84,7 +84,7 @@ mireasy --demo
 You are in the MIReasy shell. Type `session.print()` to list the songs,
 `stimulus.bpm` for the tempo of the first one, or
 `session.process_and_save(".")` to write a CSV with every measure. Leave with
-`exit()`. [README.md](README.md) explains everything you can do from here.
+`exit()`. [Using MIReasy](guide.md) explains everything you can do from here.
 
 ## Every day after that
 
@@ -121,6 +121,27 @@ Results land in an `Analysis_…` folder next to your current location.
 - Anything else: copy the error text from the Terminal and open an issue at
   <https://github.com/Atilik/mireasy/issues> — [CONTRIBUTING.md](CONTRIBUTING.md)
   shows how, step by step.
+
+## Quickstart for terminal users
+
+Needs Python 3.11+ and git; everything comes from PyPI, nothing compiles:
+
+```bash
+git clone https://github.com/Atilik/mireasy.git
+cd mireasy
+pip install -e ".[test]"
+mireasy-download-models
+python run_tests.py
+mireasy --demo
+mireasy /path/to/audio/
+```
+
+**Notes**
+- `mireasy-download-models` is optional: it enables the genre/mood/pitch features (~45 MB).
+- `python run_tests.py` should finish with "… passed" and no failures.
+- On first analysis run, the beat tracker (BEAT THIS!) and Demucs download
+  their own checkpoints automatically (~100 MB, one time) — so the first song
+  takes longer and needs an internet connection.
 
 ## Using conda instead
 

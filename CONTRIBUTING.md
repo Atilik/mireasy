@@ -46,7 +46,7 @@ MIR, so knowing *why* shapes *what* we build.
 Developers are welcome — the workflow is standard:
 
 1. **Fork** the repository and create a branch off `main`.
-2. Set up as in [INSTALLATION.md](INSTALLATION.md): a virtual environment,
+2. Set up as in the [installation guide](https://mireasy.readthedocs.io/en/latest/installation.html): a virtual environment,
    `pip install -e ".[test]"`, then `python download_models.py` (or the conda
    route with `environment.yml`, which pins the exact tested versions).
 3. Make your change. Please match the surrounding code style and keep the
@@ -55,7 +55,7 @@ Developers are welcome — the workflow is standard:
      fast** (synthetic audio, no model downloads), and new tests should be too.
    - Anything needing networks or heavy models goes behind the
      `MIREASY_RUN_SLOW=1` gate.
-   - New user-facing attributes/metrics need a row in DOCUMENTATION.md — the
+   - New user-facing attributes/metrics need a row in `docs/measures.md` — the
      doc-drift tests will remind you.
 4. Open a **pull request** against `main` describing what and why. For larger
    changes, open an issue first so we can discuss the approach before you

@@ -26,16 +26,13 @@ analyze_log.txt
 .mireasy_installed
 .mireasy_install.lock/
 
-# Documentation build: output, and the copies of the root .md files that
-# docs/conf.py regenerates on every build (the originals are the source)
+# Sphinx build output, and the two root documents docs/conf.py copies in at
+# every build (their originals at the repository root are the source)
 docs/_build/
-/docs/index.md
-/docs/INSTALLATION.md
-/docs/DOCUMENTATION.md
 /docs/CONTRIBUTING.md
 /docs/DEPENDENCY_LICENSES.md
 
-# The per-user virtual environment INSTALLATION.md creates inside the folder
+# The per-user virtual environment the installation guide creates inside the folder
 .venv/
 
 # Packaging (pip install -e .) and test/coverage artifacts

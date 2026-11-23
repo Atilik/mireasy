@@ -7,7 +7,6 @@
 ## Quick Start
 
 ```python
-# Run Python from the repo folder (the one containing README.md)
 from mireasy import Stimulus, Session
 
 # Single file
@@ -310,7 +309,7 @@ Running `.process_and_save()` generates a CSV with one row per audio file. All n
 
 ## References
 
-The same list, grouped by feature and with links, is in the README's **References** section.
+The same list, grouped by feature and with links, is on the [References](references.md) page.
 
 - Alonso-Jiménez, P., Bogdanov, D., Pons, J., & Serra, X. (2020). TensorFlow audio models in Essentia. *Proceedings of ICASSP 2020*.
 - Alonso-Jiménez, P., Serra, X., & Bogdanov, D. (2022). Music representation learning based on editorial metadata from Discogs. *Proceedings of the 23rd ISMIR*.

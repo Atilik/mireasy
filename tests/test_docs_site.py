@@ -1,9 +1,10 @@
 """Guards for the documentation site (docs/, Read the Docs, the CI docs job).
 
-The site is built from the repository's own Markdown files, synced by
-docs/conf.py at build time; these tests keep the three config surfaces
-(pyproject extra, docs/requirements.txt, .readthedocs.yaml) agreeing and make
-sure the sync still covers every root document. Offline and fast.
+The long documentation lives in docs/ (the site's own pages); the repository
+README is a short pointer to it, and only CONTRIBUTING and DEPENDENCY_LICENSES
+are copied in from the root at build time. These tests keep the three config
+surfaces (pyproject extra, docs/requirements.txt, .readthedocs.yaml) agreeing
+and the page set complete. Offline and fast.
 """
 import os
 import re
@@ -14,8 +15,9 @@ import yaml
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOCS = os.path.join(REPO, "docs")
 
-ROOT_DOCS = ["README.md", "INSTALLATION.md", "DOCUMENTATION.md",
-             "CONTRIBUTING.md", "DEPENDENCY_LICENSES.md"]
+SITE_PAGES = ["index", "installation", "guide", "measures", "references"]
+SYNCED_DOCS = ["CONTRIBUTING.md", "DEPENDENCY_LICENSES.md"]
+SITE = "https://mireasy.readthedocs.io"
 
 
 def _read(*parts):
@@ -46,9 +48,30 @@ def test_readthedocs_config_points_at_our_build():
         "Read the Docs must install only the docs toolchain (runtime deps are mocked)"
 
 
-def test_conf_syncs_every_root_document_and_mocks_the_heavy_deps():
+def test_site_pages_exist_and_are_in_the_navigation():
+    index = _read("docs", "index.md")
+    for page in SITE_PAGES:
+        assert os.path.isfile(os.path.join(DOCS, f"{page}.md")), f"docs/{page}.md is missing"
+    for target in SITE_PAGES[1:] + ["api/index", "CONTRIBUTING", "DEPENDENCY_LICENSES"]:
+        assert f"<{target}>" in index, f"{target} is not in the site navigation (docs/index.md)"
+
+
+def test_long_docs_live_only_on_the_site():
+    # One home for the long text: no second copy at the repository root, and a
+    # README short enough to read in a minute that sends people to the site.
+    for gone in ("INSTALLATION.md", "DOCUMENTATION.md"):
+        assert not os.path.exists(os.path.join(REPO, gone)), f"{gone} is back at the root"
+    readme = _read("README.md")
+    assert len(readme.splitlines()) < 100, "the README grew long again; long text belongs in docs/"
+    for page in ("installation", "guide", "measures", "api/index", "references"):
+        assert f"{SITE}/en/latest/{page}.html" in readme, f"README does not link the {page} page"
+    with open(os.path.join(REPO, "pyproject.toml"), "rb") as f:
+        assert tomllib.load(f)["project"]["urls"]["Documentation"] == SITE
+
+
+def test_conf_syncs_the_root_documents_and_mocks_the_heavy_deps():
     conf = _read("docs", "conf.py")
-    for name in ROOT_DOCS:
+    for name in SYNCED_DOCS:
         assert f'"{name}"' in conf, f"docs/conf.py no longer syncs {name} into the site"
     for dep in ("torch", "essentia", "demucs", "beat_this", "librosa", "numpy"):
         assert f'"{dep}"' in conf, f"{dep} missing from autodoc_mock_imports"

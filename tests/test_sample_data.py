@@ -1,6 +1,6 @@
 """Guards for the bundled sample dataset (mireasy/sample_stimuli/). Offline and fast.
 
-The samples are the README's "try it right now" path — if they rot, the first
+The samples are the documentation's "try it right now" path — if they rot, the first
 thing a new user touches breaks. They ship as MP3 (issue #15: six times
 smaller than WAV for people downloading the repository) and live inside the
 package since 2026-11-19 so `mireasy --demo` works after `pip install mireasy`
@@ -65,10 +65,12 @@ def test_ambient_sample_is_actually_quiet():
     assert np.abs(y).max() < 0.2, "the 'quiet' sample lost its low loudness"
 
 
-def test_readme_documents_the_samples():
-    with open(os.path.join(REPO, "README.md"), encoding="utf-8") as f:
-        readme = f.read()
-    assert "sample_stimuli" in readme
+def test_site_home_documents_the_samples():
+    # The "try it right now" walkthrough moved from the README to the site's
+    # home page (docs/index.md) on 2026-11-23.
+    with open(os.path.join(REPO, "docs", "index.md"), encoding="utf-8") as f:
+        home = f.read()
+    assert "sample_stimuli" in home and "mireasy --demo" in home
     # the two deliberate teaching caveats must stay documented
-    assert "octave error" in readme
-    assert "non-rhythmic" in readme
+    assert "octave error" in home
+    assert "non-rhythmic" in home

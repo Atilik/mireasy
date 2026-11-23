@@ -67,7 +67,7 @@ mireasy-download-models = "mireasy.download_models:main"
 
 [project.urls]
 Homepage = "https://github.com/Atilik/mireasy"
-Documentation = "https://github.com/Atilik/mireasy/blob/main/DOCUMENTATION.md"
+Documentation = "https://mireasy.readthedocs.io"
 Issues = "https://github.com/Atilik/mireasy/issues"
 
 [tool.setuptools]

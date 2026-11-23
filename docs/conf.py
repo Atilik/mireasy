@@ -1,10 +1,11 @@
 """Sphinx configuration for the MIReasy documentation site.
 
-Design: the project's own Markdown files (README, INSTALLATION, DOCUMENTATION,
-CONTRIBUTING, DEPENDENCY_LICENSES) ARE the documentation. At build time they
-are copied into this folder unchanged except for link fixes, so the site has a
-single source of truth and never drifts from GitHub. Only the API pages are
-written here, and those are generated from the code's docstrings.
+Design: the site's pages live in this folder (index, installation, guide,
+measures, references) and are the single home of the long documentation; the
+repository README is a short pointer to them. Two documents stay at the
+repository root because GitHub surfaces them there (CONTRIBUTING,
+DEPENDENCY_LICENSES); those are copied in at build time, unchanged except for
+link fixes. The API pages are generated from the code's docstrings.
 
 The heavy runtime dependencies (torch, Essentia, ...) are mocked, so the site
 builds in seconds on Read the Docs / CI without installing them.
@@ -30,28 +31,15 @@ version = ".".join(__version__.split(".")[:2])
 GITHUB = "https://github.com/Atilik/mireasy"
 
 # ── Source files synced from the repository root ─────────────────────────────
-# (published name, repository file). README becomes the landing page.
+# (published name, repository file). Everything else is written in docs/.
 SYNCED = {
-    "index.md": "README.md",
-    "INSTALLATION.md": "INSTALLATION.md",
-    "DOCUMENTATION.md": "DOCUMENTATION.md",
     "CONTRIBUTING.md": "CONTRIBUTING.md",
     "DEPENDENCY_LICENSES.md": "DEPENDENCY_LICENSES.md",
 }
 
-NAVIGATION = """
-
-```{toctree}
-:hidden:
-:maxdepth: 2
-
-Installation <INSTALLATION>
-Measures <DOCUMENTATION>
-API reference <api/index>
-Contributing <CONTRIBUTING>
-Dependency licenses <DEPENDENCY_LICENSES>
-```
-"""
+# Top-level pages of the site (the navigation itself is the toctree in index.md).
+PAGES = ["index", "installation", "guide", "measures", "references",
+         "CONTRIBUTING", "DEPENDENCY_LICENSES"]
 
 # A link whose label is plain text, or a badge: a link whose label is an image.
 _LINK = re.compile(r"(?<!!)\[((?:[^\[\]]|!\[[^\]]*\]\([^)]*\))*)\]\(([^)\s]+)\)")
@@ -82,8 +70,6 @@ def _sync_sources():
     for published, source in SYNCED.items():
         with open(os.path.join(REPO, source), encoding="utf-8") as f:
             text = _fix_links(f.read())
-        if published == "index.md":
-            text += NAVIGATION
         with open(os.path.join(DOCS, published), "w", encoding="utf-8") as f:
             f.write(text)
 
@@ -129,9 +115,9 @@ html_static_path = ["_static"]
 html_css_files = ["css/custom.css"]
 html_show_sourcelink = False
 html_context = {"default_mode": "light"}      # the palette is designed light-first
-# The synced top-level pages have no sub-pages: drop their (empty) left sidebar
-# so they read full-width with just the "On this page" outline at right.
-html_sidebars = {name[:-3]: [] for name in SYNCED}
+# The top-level pages have no sub-pages: drop their (empty) left sidebar so
+# they read full-width with just the "On this page" outline at right.
+html_sidebars = {name: [] for name in PAGES}
 html_theme_options = {
     "logo": {"text": "MIReasy"},
     "icon_links": [

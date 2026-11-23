@@ -1,7 +1,8 @@
 """
-Doc-drift guard: every attribute that README.md, DOCUMENTATION.md and the
-help() texts tell users to type must actually exist. Catches renames like
-`stimuli` -> `session` or `.toussaint_sync_score` before users do.
+Doc-drift guard: every attribute that the user guide (docs/guide.md), the
+measures page (docs/measures.md) and the help() texts tell users to type must
+actually exist. Catches renames like `stimuli` -> `session` or
+`.toussaint_sync_score` before users do.
 """
 import os
 import re
@@ -47,23 +48,23 @@ def _missing(pairs, objects):
                    if name not in dir(objects[who])})
 
 
-def test_readme_uses_shell_variable_names():
-    # Regression: README said `stimuli(3)` / `stimuli.help()`, but the shell
+def test_guide_uses_shell_variable_names():
+    # Regression: the guide said `stimuli(3)` / `stimuli.help()`, but the shell
     # defines `session`. Checks `name(3)`, `name("x")` and `name.method(`.
     calls = re.findall(r"`([a-z_]\w*)(?:\((?:\d+|\"[^\"]*\")\)|\.\w+\()",
-                       _read("README.md"))
+                       _read("docs/guide.md"))
     assert len(calls) > 10
     assert set(calls) <= {"stimulus", "session", "participant"}
 
 
-def test_readme_names_exist(objects):
-    pairs = PREFIXED.findall(_read("README.md"))
+def test_guide_names_exist(objects):
+    pairs = PREFIXED.findall(_read("docs/guide.md"))
     assert len(pairs) > 20                       # sanity: the parser found them
     assert _missing(pairs, objects) == []
 
 
-def test_documentation_names_exist(objects):
-    text = _read("DOCUMENTATION.md")
+def test_measures_page_names_exist(objects):
+    text = _read("docs/measures.md")
     pairs = PREFIXED.findall(text)
     # The feature tables list Stimulus attributes as `.name`
     for line in text.splitlines():
