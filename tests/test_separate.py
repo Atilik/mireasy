@@ -1,14 +1,15 @@
 """Tests for mireasy/separate.py.
 
-Default tests exercise the fast paths: input validation and audio loading
-(no model). The real Demucs separation runs only with MIREASY_RUN_SLOW=1 AND
-a cached model checkpoint.
+Default tests exercise the fast paths: input validation, audio loading and
+how the model is loaded (with stand-ins, no model). The real Demucs separation
+runs only with MIREASY_RUN_SLOW=1 AND the model already on disk.
 """
 import glob
 import os
 import shutil
 import subprocess
 import sys
+import types
 
 import librosa
 import numpy as np
@@ -18,10 +19,21 @@ import soundfile as sf
 from mireasy.separate import separate, _load_audio
 from conftest import make_clicks, RUN_SLOW
 
+
+def _demucs_model_on_disk():
+    """Demucs 4.1 keeps htdemucs in the Hugging Face cache, Demucs 4.0 in the torch cache."""
+    try:
+        import demucs.hf  # noqa: F401
+        from huggingface_hub import try_to_load_from_cache
+    except ImportError:
+        return bool(glob.glob(os.path.join(
+            os.path.expanduser("~"), ".cache", "torch", "hub", "checkpoints", "*.th")))
+    return isinstance(try_to_load_from_cache("adefossez/HTDemucs", "htdemucs.yaml"), str)
+
+
 SLOW = pytest.mark.skipif(
-    not (RUN_SLOW and glob.glob(os.path.join(
-        os.path.expanduser("~"), ".cache", "torch", "hub", "checkpoints", "*.th"))),
-    reason="set MIREASY_RUN_SLOW=1 (and have htdemucs cached) to run Demucs",
+    not (RUN_SLOW and _demucs_model_on_disk()),
+    reason="set MIREASY_RUN_SLOW=1 (and have htdemucs on disk) to run Demucs",
 )
 
 
@@ -125,7 +137,107 @@ def test_separate_disables_random_shifts(sine_wav, monkeypatch):
         f"apply_model must be called with shifts=0 for reproducible stems, got {captured}"
 
 
+# ── loading the model (fast, stand-ins for Demucs and the hub) ──
+
+class _FakeModel:
+    samplerate, audio_channels = 44100, 2
+    sources = ["drums", "bass", "other", "vocals"]
+    def eval(self): return self
+    def to(self, device): return self
+
+
+def _fake_hub(monkeypatch, on_disk):
+    """Stand-ins for huggingface_hub and demucs.hf (Demucs 4.1). Returns the
+    fake hub module and the list of download calls it received."""
+    calls = []
+
+    def hf_hub_download(repo_id, filename, **kwargs):
+        calls.append((filename, kwargs))
+        if kwargs.get("local_files_only") and not on_disk:
+            raise FileNotFoundError(filename)
+        return f"/cache/{filename}"
+
+    def get_hf_model(name):
+        from huggingface_hub import hf_hub_download     # looked up at call time, as Demucs does
+        hf_hub_download("adefossez/HTDemucs", f"{name}.yaml")
+        hf_hub_download("adefossez/HTDemucs", "955717e8.safetensors")
+        return "model from the hub files"
+
+    hub = types.ModuleType("huggingface_hub")
+    hub.hf_hub_download = hf_hub_download
+    hf = types.ModuleType("demucs.hf")
+    hf.get_hf_model = get_hf_model
+    monkeypatch.setitem(sys.modules, "huggingface_hub", hub)
+    monkeypatch.setitem(sys.modules, "demucs.hf", hf)
+    return hub, calls
+
+
+def test_model_on_disk_is_loaded_without_asking_the_hub(monkeypatch):
+    # Demucs 4.1 asks the Hugging Face hub about its model file on every load.
+    # With the file on disk nothing may be asked: every call is disk-only.
+    import mireasy.separate as sep
+    hub, calls = _fake_hub(monkeypatch, on_disk=True)
+    original = hub.hf_hub_download
+    monkeypatch.setattr(sep, "get_model", lambda name: pytest.fail("must not go online"))
+
+    assert sep._load_model() == "model from the hub files"
+    assert [name for name, _ in calls] == ["htdemucs.yaml", "955717e8.safetensors"]
+    assert all(kwargs == {"local_files_only": True} for _, kwargs in calls)
+    assert hub.hf_hub_download is original, "the hub's download function was not put back"
+
+
+def test_model_not_on_disk_is_downloaded_the_usual_way(monkeypatch):
+    import mireasy.separate as sep
+    hub, calls = _fake_hub(monkeypatch, on_disk=False)
+    original = hub.hf_hub_download
+    asked = []
+    monkeypatch.setattr(sep, "get_model", lambda name: asked.append(name) or "model after download")
+
+    assert sep._load_model() == "model after download"
+    assert asked == ["htdemucs"]
+    assert hub.hf_hub_download is original, "the hub's download function was not put back"
+
+
+def test_demucs_without_the_hub_loads_as_before(monkeypatch):
+    # Demucs 4.0 has no demucs.hf module: one file in the torch cache.
+    import mireasy.separate as sep
+    monkeypatch.setitem(sys.modules, "demucs.hf", None)      # makes the import fail
+    monkeypatch.setattr(sep, "get_model", lambda name: f"{name} from the torch cache")
+    assert sep._load_model() == "htdemucs from the torch cache"
+
+
+def test_the_model_is_loaded_once_and_reused(sine_wav, monkeypatch):
+    import torch
+    import mireasy.separate as sep
+    loads = []
+    monkeypatch.setattr(sep, "_MODEL", None)
+    monkeypatch.setattr(sep, "_load_model", lambda: loads.append(1) or _FakeModel())
+    monkeypatch.setattr(sep, "apply_model",
+                        lambda model, mix, **kw: torch.zeros(1, len(model.sources), *mix.shape[1:]))
+    sep.separate(sine_wav, target_source="drums")
+    sep.separate(sine_wav, target_source="drums")
+    assert loads == [1]
+
+
 # ── full separation (slow, model required) ──────────────────
+
+@SLOW
+def test_model_on_disk_loads_without_any_internet_lookup(monkeypatch):
+    # The real thing: with htdemucs on disk, loading it must not look up a
+    # single internet address (Demucs 4.1 would ask huggingface.co).
+    import socket
+    import mireasy.separate as sep
+    asked = []
+    lookup = socket.getaddrinfo
+
+    def spy(host, *args, **kwargs):
+        asked.append(host)
+        return lookup(host, *args, **kwargs)
+
+    monkeypatch.setattr(socket, "getaddrinfo", spy)
+    assert sep._load_model() is not None
+    assert asked == []
+
 
 @SLOW
 def test_separate_drums_end_to_end(click_wav):

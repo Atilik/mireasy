@@ -19,6 +19,37 @@ from .core import AUDIO_EXTS
 _MODEL = None
 
 
+def _load_model():
+    """Load the htdemucs model, from disk without the internet when possible.
+
+    Demucs 4.1 keeps its models on the Hugging Face hub and asks the hub about
+    the file on every load, also when the file is already on disk. So the copy
+    on disk is tried first, and only when there is none yet (the first use)
+    does Demucs download as usual. Demucs 4.0 keeps one file in the torch
+    cache and never asks again, so it needs nothing special.
+    """
+    try:
+        import huggingface_hub
+        from demucs.hf import get_hf_model
+    except ImportError:
+        return get_model(name="htdemucs")
+
+    download = huggingface_hub.hf_hub_download
+
+    def from_disk_only(*args, **kwargs):
+        return download(*args, **{**kwargs, "local_files_only": True})
+
+    # Demucs looks this function up when it loads, so it gets the disk-only one.
+    huggingface_hub.hf_hub_download = from_disk_only
+    try:
+        return get_hf_model("htdemucs")
+    except Exception:
+        pass        # not on disk yet
+    finally:
+        huggingface_hub.hf_hub_download = download
+    return get_model(name="htdemucs")
+
+
 def _load_audio(file, samplerate, channels):
     """
     Load an audio file as a float32 tensor (channels, samples) at the model's
@@ -75,8 +106,7 @@ def separate(file, target_source="drums", gpu=None):
         raise ValueError(f"Unsupported audio format: {file}. Supported: {AUDIO_EXTS}")
 
     if _MODEL is None:
-        # print("Loading Demucs model (this happens only once)...")
-        _MODEL = get_model(name="htdemucs")
+        _MODEL = _load_model()
         _MODEL.eval()
 
     # Resolve the compute device on every call (the cached model is moved as

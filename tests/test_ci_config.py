@@ -91,6 +91,10 @@ def test_slow_tier_runs_the_real_models():
     assert run_step["env"]["MIREASY_RUN_SLOW"] == "1"
     warm = _runs("slow")
     assert "get_model('htdemucs')" in warm and "Audio2Beats" in warm
+    # Demucs 4.1 keeps its model in the Hugging Face cache. Without it on disk
+    # the Demucs tests are skipped and the slow tier tests no separation at all.
+    cache = [s for s in steps if s.get("uses", "").startswith("actions/cache")][0]
+    assert "~/.cache/huggingface" in cache["with"]["path"]
 
 
 def test_both_tiers_upload_coverage():

@@ -168,14 +168,17 @@ jobs:
       - name: Cache model checkpoints (BEAT THIS!, Demucs, Essentia)
         uses: actions/cache@v4
         with:
+          # Demucs 4.1 keeps its model in the Hugging Face cache, Demucs 4.0 and
+          # BEAT THIS! in the torch cache.
           path: |
             ~/.cache/torch
+            ~/.cache/huggingface
             mireasy/models
           key: model-checkpoints-${{ hashFiles('download_models.py', 'pyproject.toml') }}
 
       - name: Warm model caches
-        # The Demucs tests only run when the htdemucs checkpoint is already
-        # cached; BEAT THIS! fetches its checkpoint on first use.
+        # The Demucs tests only run when the htdemucs model is already on
+        # disk; BEAT THIS! fetches its checkpoint on first use.
         run: |
           python download_models.py
           python -c "from demucs.pretrained import get_model; get_model('htdemucs')"
