@@ -36,6 +36,8 @@ def test_installation_page_mentions_the_moving_parts():
     s = _read("docs/installation.md")
     for needle in ("python.org", 'install -e ".[test]"',
                    "externally-managed-environment",    # the case that needs a venv
+                   "requires a different Python",       # pip's words for a Python outside the range
+                   "macOS 15",                          # the Essentia wheels need it
                    "mireasy-download-models", "run_tests.py", "mireasy --demo",
                    "conda env create -f environment.yml", "conda activate mireasy",
                    "Linux and Mac", "Apple Silicon", "Windows is not supported"):

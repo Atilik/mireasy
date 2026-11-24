@@ -35,7 +35,7 @@ Everything is on the documentation site, **<https://mireasy.readthedocs.io>**:
 
 ## 🛠️ Install
 
-Needs Python 3.11 or newer on an Apple Silicon Mac (macOS 15+) or Linux. Windows is not supported for now.
+Needs Python 3.11 to 3.14 on an Apple Silicon Mac (macOS 15+) or Linux. Windows is not supported for now.
 
 ```bash
 pip install https://github.com/Atilik/mireasy/archive/refs/heads/main.zip

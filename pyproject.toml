@@ -10,7 +10,9 @@ readme = "README.md"
 license = "BSD-3-Clause"
 license-files = ["LICENSE.md"]
 authors = [{ name = "Mehmet Atilay Kucukoglu" }]
-requires-python = ">=3.11"
+# Essentia has no wheel for Python 3.15 yet, so pip must refuse it with a clear
+# message. Raise this bound together with the classifiers and the CI matrix.
+requires-python = ">=3.11,<3.15"
 keywords = [
   "music information retrieval", "music psychology", "music therapy",
   "audio features", "tempo", "beat tracking", "syncopation", "loudness",

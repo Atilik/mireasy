@@ -5,6 +5,8 @@ import os
 import re
 import tomllib
 
+import yaml
+
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -41,7 +43,7 @@ def _env_yml_pip_names():
 def test_pyproject_names_the_package_and_entry_point():
     p = _pyproject()["project"]
     assert p["name"] == "mireasy"
-    assert p["requires-python"] == ">=3.11"
+    assert p["requires-python"] == ">=3.11,<3.15"
     assert p["scripts"]["mireasy"] == "mireasy.mireasy:main"
     assert p["scripts"]["mireasy-download-models"] == "mireasy.download_models:main"
 
@@ -64,6 +66,27 @@ def test_no_git_url_or_compiled_dependencies():
     assert not any(_name(d) == "madmom" for d in deps)
     bt = [d for d in deps if _name(d) == "beat-this"]
     assert len(bt) == 1 and ">=1.1" in bt[0], "beat-this must come from PyPI, 1.1 or newer"
+
+
+def test_python_range_is_the_same_everywhere():
+    # Essentia has no wheel for the Python after the newest one listed in the
+    # classifiers. pip must refuse that Python with a clear message, and the
+    # CI matrix, the install page and the README must name the same range.
+    found = [re.fullmatch(r"Programming Language :: Python :: (3\.\d+)", c)
+             for c in _pyproject()["project"]["classifiers"]]
+    pythons = sorted((m.group(1) for m in found if m), key=lambda v: int(v.split(".")[1]))
+    low, high = pythons[0], pythons[-1]
+    too_new = f"3.{int(high.split('.')[1]) + 1}"
+    assert _pyproject()["project"]["requires-python"] == f">={low},<{too_new}"
+
+    with open(os.path.join(REPO, ".github", "workflows", "tests.yml"), encoding="utf-8") as f:
+        jobs = yaml.safe_load(f)["jobs"]
+    for job in ("test-linux", "test-macos"):
+        assert jobs[job]["strategy"]["matrix"]["python"] == pythons, f"{job} tests other Pythons"
+
+    for name in ("docs/installation.md", "README.md"):
+        with open(os.path.join(REPO, name), encoding="utf-8") as f:
+            assert f"Python {low} to {high}" in f.read(), f"{name} names another Python range"
 
 
 def test_certifi_is_a_declared_dependency():

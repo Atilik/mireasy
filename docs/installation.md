@@ -1,12 +1,12 @@
 # Installing MIReasy
 
-MIReasy works with Linux and Mac (Apple Silicon), and you need 3 GB of free disk space. Windows is not supported for now.
+MIReasy works with Linux and Mac (Apple Silicon, macOS 15 or newer), and you need 3 GB of free disk space. Windows is not supported for now.
 
 ## Step 1: Install Python
 
-MIReasy needs Python 3.11 or newer (3.12 recommended).
+MIReasy needs Python 3.11 to 3.14 (3.12 recommended). Python 3.15 does not work yet.
 
-- **Mac:** download the installer from **<https://www.python.org/downloads/macos/>**, open it, and click through with the default choices.
+- **Mac:** download the **[Python 3.12 installer](https://www.python.org/ftp/python/3.12.10/python-3.12.10-macos11.pkg)** from python.org, open it, and click through with the default choices.
 - **Terminal/Linux:**
 
   ```bash
@@ -59,6 +59,7 @@ You can drag your audio folder into the Terminal instead of typing its path. The
 
 - `python3: command not found`: close the Terminal and open it again.
 - `error: externally-managed-environment`: on a Mac, use the python.org Python from Step 1. On Linux, follow the Linux note in Step 2.
+- `requires a different Python`: your Python is too new or too old. Install Python 3.12 from Step 1, open a new Terminal, and try again.
 - `.m4a` files are not read: install ffmpeg (`brew install ffmpeg` on a Mac). WAV, MP3, FLAC and OGG work without it.
 - Anything else: copy the error text and open an issue at <https://github.com/Atilik/mireasy/issues>. [CONTRIBUTING.md](CONTRIBUTING.md) shows how.
 
