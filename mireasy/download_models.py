@@ -96,10 +96,10 @@ def main(argv=None):
     missing = [name for _, name in FILES
                if not os.path.isfile(os.path.join(dest_dir, name))]
     if failed or missing:
-        print(f"✗ {len(set(failed + missing))} file(s) missing — re-run this "
+        print(f"✗ {len(set(failed + missing))} file(s) missing. Re-run this "
               f"command to retry. Genre/mood/pitch features need all files.")
         return 1
-    print(f"✓ All {len(FILES)} model files present in {dest_dir} — genre, mood, "
+    print(f"✓ All {len(FILES)} model files present in {dest_dir}: genre, mood, "
           f"voice/instrumental, and pitch features are ready.")
     return 0
 

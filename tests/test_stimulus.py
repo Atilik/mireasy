@@ -15,7 +15,7 @@ from mireasy.mireasy import Stimulus
 # ── construction / validation ───────────────────────────────
 
 def test_init_missing_file_raises():
-    # Regression (#4): used to construct fine and explode later
+    # Regression: used to construct fine and explode later
     with pytest.raises(FileNotFoundError):
         Stimulus("/definitely/not/here.wav")
 
@@ -282,7 +282,7 @@ def _read_saved_csv(out_dir):
 
 
 def test_partial_process_save_rhythm_only(sine_wav, tmp_path, inject_rhythm):
-    # rhythm = beats/BPM only — must NOT run the syncopation pipeline
+    # rhythm = beats/BPM only, must NOT run the syncopation pipeline
     s = Stimulus(sine_wav)
     inject_rhythm(s)                            # beats+drums present, no ML
     s.partial_process_save(output_path=str(tmp_path), rhythm=True)
@@ -333,7 +333,7 @@ def test_partial_process_save_pitch_only(sine_wav, tmp_path, monkeypatch):
 
 
 def test_partial_process_save_key_real(sine_wav, tmp_path):
-    # KeyExtractor is algorithmic (no model files) — run it for real
+    # KeyExtractor is algorithmic (no model files), run it for real
     s = Stimulus(sine_wav)
     s.partial_process_save(output_path=str(tmp_path), key=True)
     header, rows = _read_saved_csv(str(tmp_path))
@@ -360,7 +360,7 @@ def test_partial_process_save_no_groups_hint(sine_wav, tmp_path, capsys):
 
 def test_short_file_loudness_and_save(tmp_path):
     # Regression (was critical #2): a < 400 ms file must not crash the
-    # save/export path — LUFS is NaN, everything else still computes.
+    # save/export path, LUFS is NaN, everything else still computes.
     import soundfile as sf
     from conftest import make_sine
     p = str(tmp_path / "blip.wav")
@@ -409,7 +409,7 @@ def missing_models(monkeypatch):
     import mireasy.mireasy as rw
 
     def missing(path):
-        raise FileNotFoundError("model file x.pb not installed — run: python download_models.py")
+        raise FileNotFoundError("model file x.pb not installed. Run: python download_models.py")
 
     monkeypatch.setattr(rw, "_classify_all", missing)
     monkeypatch.setattr(rw, "_detect_pitch_crepe", missing)

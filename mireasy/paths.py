@@ -2,12 +2,12 @@
 
 Resolution order of :func:`models_dir` (first match wins):
 
-1. ``$MIREASY_MODELS_DIR`` — explicit override (CI uses it to keep the models
+1. ``$MIREASY_MODELS_DIR``, explicit override (CI uses it to keep the models
    inside its cache path).
-2. ``<package>/models`` — the pre-0.1 layout, honoured only when it already
+2. ``<package>/models``, the pre-0.1 layout, honoured only when it already
    holds the embedding model, so source checkouts that downloaded earlier keep
    working.
-3. The per-user cache folder — the default for ``pip install mireasy``:
+3. The per-user cache folder, the default for ``pip install mireasy``:
 
    ========  =================================================================
    macOS     ``~/Library/Caches/mireasy/models``

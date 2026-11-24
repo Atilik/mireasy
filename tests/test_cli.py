@@ -74,7 +74,7 @@ def test_main_without_args_prints_usage(run_main, capsys):
 
 
 def test_junk_subfolders_do_not_turn_a_session_into_a_participant(session_folder):
-    # Regression (2026-11-19): the installed demo folder gained a __pycache__
+    # Regression: the installed demo folder gained a __pycache__
     # subfolder and loaded as a participant with one empty session. __MACOSX
     # (zip archives) is the same trap for users' own folders.
     from mireasy.mireasy import Session, mireasy as load

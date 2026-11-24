@@ -15,7 +15,7 @@ dependencies:
   - pip
   # ── Python packages (pip, pinned) ──
   # numpy comes from pip, NOT conda: conda-forge's numpy links an OpenMP
-  # runtime that clashes with the one bundled in pip's torch — a hard crash
+  # runtime that clashes with the one bundled in pip's torch, a hard crash
   # for any process that imports torch before numpy.
   - pip:
       - numpy==2.4.6

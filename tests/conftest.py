@@ -5,7 +5,7 @@ All audio is synthetic (sine waves / click tracks) so tests are fast,
 deterministic, and need no external data or ML models.
 
 Heavy paths (Demucs, BEAT THIS!, Essentia classifiers) are gated behind
-MIREASY_RUN_SLOW=1 and model-cache checks — see test_separate.py / test_genre.py.
+MIREASY_RUN_SLOW=1 and model-cache checks, see test_separate.py / test_genre.py.
 """
 import os
 import sys

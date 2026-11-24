@@ -18,7 +18,7 @@ mireasy /path/to/participant_folder/
 
 This drops you into an interactive Python shell pre-loaded with your data. Leave it with `exit()` or Ctrl-D.
 
-Prefer scripts or notebooks? See [Measures](measures.md) — `from mireasy import Stimulus, Session, Participant`.
+Prefer scripts or notebooks? See [Measures](measures.md): `from mireasy import Stimulus, Session, Participant`.
 
 ---
 
@@ -39,24 +39,24 @@ When you load a folder, `mireasy` automatically gives you variables (`participan
 Type the following commands directly into the terminal once `mireasy` is launched:
 
 ### Navigating Data
-- `participant(1)` — Focus on the 1st session. Updates the `session` and `stimulus` variables.
-- `participant("baseline")` — Focus on a session containing "baseline" in its folder name.
-- `session(3)` — Focus on the 3rd song in the current session. Updates the `stimulus` variable.
-- `session("beatles")` — Focus on a song containing "beatles" in its filename.
+- `participant(1)`: Focus on the 1st session. Updates the `session` and `stimulus` variables.
+- `participant("baseline")`: Focus on a session containing "baseline" in its folder name.
+- `session(3)`: Focus on the 3rd song in the current session. Updates the `stimulus` variable.
+- `session("beatles")`: Focus on a song containing "beatles" in its filename.
 
 ### Viewing Info
-- `stimulus.help()` — List all available attributes and methods for the current song.
-- `session.help()` — List all available methods for the session.
-- `participant.help()` — List all available methods for the participant.
-- `stimulus.print()` — Print a summary of the current song (loudness, BPM, syncopation, key, etc.).
-- `session.print()` — List the songs in the current session.
-- `participant.print()` — List the sessions loaded for this participant.
+- `stimulus.help()`: List all available attributes and methods for the current song.
+- `session.help()`: List all available methods for the session.
+- `participant.help()`: List all available methods for the participant.
+- `stimulus.print()`: Print a summary of the current song (loudness, BPM, syncopation, key, etc.).
+- `session.print()`: List the songs in the current session.
+- `participant.print()`: List the sessions loaded for this participant.
 
 ### Interactive Player & Viz
 - **`stimulus.play()`**
   Launch the interactive unified player. You can switch between Waveform, Mel, Log, Linear, and Pitch views. Click **Beats** or **Onsets** to visualize and sonify rhythm markers directly over the audio playback.
-- `stimulus.plot()` — Spectrogram window (`scale='mel'` by default, or `'linear'` / `'log'`).
-- `session.boxplot()` — Boxplots of BPM, LUFS, and syncopation across the session.
+- `stimulus.plot()`: Spectrogram window (`scale='mel'` by default, or `'linear'` / `'log'`).
+- `session.boxplot()`: Boxplots of BPM, LUFS, and syncopation across the session.
 
 ### Getting Metrics
 Access properties on-the-fly. If a metric hasn't been computed yet, `mireasy` computes it on first access (model-based metrics take a few seconds).
@@ -84,15 +84,15 @@ Access properties on-the-fly. If a metric hasn't been computed yet, `mireasy` co
 Results are written to `output_folder/Analysis_DD-MM-YYYY/mireasy_HH-MM-SS.csv` (the exact path is printed after saving).
 
 ### Aggregate Metrics
-- `session.average_fluctuation` / `session.average_irregularity` — Mean fluctuation / spectral irregularity across the session's songs.
-- `participant.average_fluctuation` / `participant.average_irregularity` — Same, across every song in every session.
+- `session.average_fluctuation` / `session.average_irregularity`: Mean fluctuation / spectral irregularity across the session's songs.
+- `participant.average_fluctuation` / `participant.average_irregularity`: Same, across every song in every session.
 
 ---
 
 ## 🛠 Advanced Features
 
 ### Separation & Syncopation
-Syncopation requires isolating the drums with Demucs. The first time you ask for a syncopation score, `mireasy` asks for confirmation (`Proceed? [Y/n]`) — on a CPU, separation takes roughly as long as the song itself.
+Syncopation requires isolating the drums with Demucs. The first time you ask for a syncopation score, `mireasy` asks for confirmation (`Proceed? [Y/n]`): on a CPU, separation takes roughly as long as the song itself.
 ```python
 >>> stimulus.syncopation_score()
 ```
@@ -109,7 +109,7 @@ The pitch view mode in `stimulus.play()` runs CREPE pitch detection.
 ## 🧪 Running Tests
 
 ```bash
-# Fast suite — synthetic audio only (~15 s with classifier models installed)
+# Fast suite: synthetic audio only (~15 s with classifier models installed)
 python run_tests.py
 
 # Also run the slow model tests (BEAT THIS! beat detection, Demucs separation
@@ -118,5 +118,5 @@ MIREASY_RUN_SLOW=1 python run_tests.py
 ```
 
 Tests that need the Essentia classifier models skip automatically while those
-files are absent — run `mireasy-download-models` (or `python download_models.py`
+files are absent, run `mireasy-download-models` (or `python download_models.py`
 in the repository) to activate them.

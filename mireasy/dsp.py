@@ -33,7 +33,7 @@ def get_loudness(y, sr):
         lufs = meter.integrated_loudness(y_ln)
     except ValueError:
         # Clip shorter than the 400 ms BS.1770 gating block: integrated
-        # loudness is undefined — report NaN instead of crashing.
+        # loudness is undefined, report NaN instead of crashing.
         # (RMS below works for any length.)
         lufs = float("nan")
 
@@ -41,7 +41,7 @@ def get_loudness(y, sr):
     rms = np.sqrt(np.mean(y.astype(np.float64) ** 2))
     rms_db = 20.0 * np.log10(rms + 1e-12)  # guard against log(0)
 
-    # Full precision — display code formats for readability; CSV stores raw
+    # Full precision, display code formats for readability; CSV stores raw
     return float(lufs), float(rms_db)
 
 
@@ -156,18 +156,35 @@ def filter_bell(y, cutoff_freq, sr=44100, hop_length=512):
 #  Fluctuation strength  (Pampalk et al., 2002)
 # ──────────────────────────────────────────────
 
-def compute_fluctuation(y, sr, n_bands=40, frame_sec=0.023, max_mod_freq=10.0):
+def compute_fluctuation(y, sr, n_bands=40, frame_sec=0.023, max_mod_freq=10.0,
+                        sequence_sec=6.0):
     """
-    Compute rhythmic periodicity (fluctuation strength) along auditory bands.
+    Fluctuation strength, after the rhythm patterns of Pampalk, Rauber and
+    Merkl (2002).
 
-    Based on MIRtoolbox's mirfluctuation (Pampalk et al., 2002).
+    As in the paper, the file is cut into 6-second sequences. For each
+    sequence and each frequency band the level modulation is analysed with an
+    FFT and weighted with the fluctuation strength model, which is strongest
+    at 4 Hz. The median over all sequences gives the pattern of the file, so
+    the result does not depend on the length of the file.
+
+    Simplified compared with the paper: 40 mel bands instead of 20 Bark
+    bands, levels in decibels instead of the masking, phon and sone steps, no
+    gradient or Gaussian filter, and every sequence is used. The paper
+    describes the pattern (bands x modulation frequencies). The single summary
+    number is ours: the pattern summed over bands and averaged over
+    modulation frequencies.
 
     Pipeline:
       1. Compute power mel spectrogram  (n_bands mel bands, 23ms frames)
       2. Convert to dB
-      3. For each band, compute FFT → modulation spectrum
+      3. Cut into 6-second sequences; for each band of each sequence,
+         compute the FFT → modulation amplitudes up to max_mod_freq
       4. Weight by Fastl fluctuation strength model:  w(f) = 1/(f/4 + 4/f)
-      5. Sum across bands → fluctuation summary
+      5. Median over the sequences → fluctuation pattern
+      6. Sum across bands, mean across modulation bins → summary
+
+    A file shorter than one sequence is analysed as a single shorter sequence.
 
     Parameters
     ----------
@@ -176,20 +193,22 @@ def compute_fluctuation(y, sr, n_bands=40, frame_sec=0.023, max_mod_freq=10.0):
     sr : int
         Sample rate.
     n_bands : int
-        Number of mel bands (default 40, like MIRtoolbox 'Mel' mode).
+        Number of mel bands (default 40).
     frame_sec : float
         Frame length in seconds (default 0.023 = 23ms).
     max_mod_freq : float
         Maximum modulation frequency in Hz (default 10).
+    sequence_sec : float
+        Length of one sequence in seconds (default 6, as in the paper).
 
     Returns
     -------
     fluctuation_summary : float
-        Total fluctuation strength (scalar summary).
+        Fluctuation strength (scalar summary).
     mod_freqs : np.ndarray
         Modulation frequency axis in Hz.
     fluctuation_per_band : np.ndarray (n_bands, n_mod_bins)
-        Fluctuation spectrum per auditory band.
+        Fluctuation pattern: median over the sequences, per band.
     """
     if y.ndim == 2:
         y = librosa.to_mono(y)
@@ -205,18 +224,14 @@ def compute_fluctuation(y, sr, n_bands=40, frame_sec=0.023, max_mod_freq=10.0):
     # 2. Convert to dB
     S_dB = librosa.power_to_db(S, ref=np.max)
 
-    # 3. For each band: FFT to get modulation spectrum
+    # 3. Sequences of 6 seconds (one shorter sequence if the file is shorter)
     n_frames = S_dB.shape[1]
-    mod_spec = np.abs(np.fft.rfft(S_dB, axis=1))
-
-    # Modulation frequency axis
     frame_rate = sr / hop_length  # frames per second
-    mod_freqs = np.fft.rfftfreq(n_frames, d=1.0 / frame_rate)
+    n_seq = min(int(round(sequence_sec * frame_rate)), n_frames)
 
-    # Trim to max_mod_freq
+    mod_freqs = np.fft.rfftfreq(n_seq, d=1.0 / frame_rate)
     valid = mod_freqs <= max_mod_freq
     mod_freqs = mod_freqs[valid]
-    mod_spec = mod_spec[:, valid]
 
     # 4. Fastl fluctuation strength weighting: w(f) = 1/(f/4 + 4/f)
     #    Peak at 4 Hz (typical perceptual tempo)
@@ -225,10 +240,19 @@ def compute_fluctuation(y, sr, n_bands=40, frame_sec=0.023, max_mod_freq=10.0):
     weights[0] = 0.0  # DC has no rhythmic meaning
     weights = np.nan_to_num(weights)
 
-    # Apply weighting
-    fluctuation_per_band = mod_spec * weights[np.newaxis, :]
+    patterns = []
+    for start in range(0, n_frames - n_seq + 1, n_seq):
+        seq = S_dB[:, start:start + n_seq]
+        # Modulation amplitude in dB: dividing by the sequence length keeps
+        # the value independent of how many frames went into the FFT.
+        amplitude = np.abs(np.fft.rfft(seq, axis=1)) * (2.0 / n_seq)
+        patterns.append(amplitude[:, valid] * weights[np.newaxis, :])
 
-    # 5. Summary: sum across bands, take mean across modulation bins
+    # 5. Median over the sequences (the paper found the mean too sensitive
+    #    to outliers)
+    fluctuation_per_band = np.median(np.stack(patterns), axis=0)
+
+    # 6. Summary: sum across bands, take mean across modulation bins
     fluctuation_summary = float(np.mean(np.sum(fluctuation_per_band, axis=0)))
 
     return fluctuation_summary, mod_freqs, fluctuation_per_band

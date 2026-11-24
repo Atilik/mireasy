@@ -1,71 +1,61 @@
 # Dependency licenses
 
-An audit of every runtime dependency of mireasy, compiled so the project's own
-license can be chosen with full information. Versions are the ones pinned by
-`environment.yml` (audited 2026-10-13 from an installed environment; license
-fields read from package metadata and verified against each project's
-repository or website).
+What MIReasy is built on, and under which license. Checked on 2026-11-24
+against the package metadata of an installed copy (81 packages) and the
+publishers' own pages.
 
-## Summary — the three things that matter
+## Summary
 
-1. **mireasy's own code** contains no copied third-party code and can carry its
-   own license (e.g. BSD-3-Clause). The questions below are about what we
-   *depend on* and *redistribute*.
-2. **Essentia's code is AGPL-3.0** — the strongest copyleft license. mireasy
-   imports Essentia for key detection, pitch (CREPE), and the genre/mood
-   classifiers. Depending on interpretation, distributing a program built on an
-   AGPL library can carry AGPL obligations for the combined work. MTG offers
-   the same software "under proprietary license upon request." **Decision
-   needed:** accept this, negotiate with MTG, or make Essentia-dependent
-   features an optional extra.
-3. **All pretrained model weights from MTG (Essentia models, incl. the ported
-   CREPE) are CC BY-NC-SA 4.0** — attribution, **non-commercial use only**,
-   share-alike. In practice the package *as used for research* is fine, but
-   the overall offering cannot be presented as unrestricted BSD-3. (madmom,
-   whose bundled models carried the same license and were redistributed in
-   this repository, was removed on 2026-10-25; BEAT THIS! — MIT, weights
-   included — covers beat, downbeat and meter detection alone.)
+1. **MIReasy's own code is BSD 3-Clause.** It contains no copied third-party
+   code.
+2. **Essentia is AGPL-3.0.** MIReasy uses it for key detection, pitch (CREPE)
+   and the genre, mood and voice classifiers. If you pass MIReasy on together
+   with Essentia, the AGPL conditions can apply to the whole. MTG also offers
+   Essentia under a commercial license on request.
+3. **The Essentia models are CC BY-NC-SA 4.0: non-commercial use only.** This
+   covers the genre, mood, voice and CREPE pitch models that
+   `mireasy-download-models` fetches from MTG.
+4. **The Demucs model weights have no clear license.** The Demucs author
+   writes: "The license of the weights is not clear: MusDB contains some data
+   that were only usable for research purpose." Drum separation, and so the
+   syncopation score, should be treated as research use only.
+
+In short: MIReasy is free to use for research. It is not cleared for
+commercial use.
 
 ## Direct dependencies
 
+Versions are those of the tested environment.
+
 | Package | Version | License | Used for |
 |---|---|---|---|
-| [beat_this](https://github.com/CPJKU/beat_this) | 1.1.0 | **MIT** (explicitly covers code *and* published model weights) | Beat, downbeat and meter detection |
-| [demucs](https://github.com/adefossez/demucs) | 4.0.1 | **MIT** (code; README does not state a license for the htdemucs weights — see open questions) | Drum separation for syncopation |
-| [essentia-tensorflow](https://essentia.upf.edu) | 2.1b6.dev1389 | **AGPL-3.0** (code; wheel bundles TensorFlow, Apache-2.0) | Key detection, CREPE pitch, genre/mood classifiers |
-| Essentia pretrained models | fetched by `mireasy-download-models` (not shipped in the package) | **CC BY-NC-SA 4.0** ("All the models created by the MTG are licensed under CC BY-NC-SA 4.0"; proprietary license available on request) | Genre, mood, voice/instrumental, CREPE pitch |
+| [beat-this](https://github.com/CPJKU/beat_this) | 1.1.0 | **MIT**, code and published model weights. The authors note that some of the training data is copyrighted or under limited Creative Commons licenses. | Beat, downbeat and meter detection |
+| [demucs](https://github.com/adefossez/demucs) | 4.0.1 | **MIT** for the code. Model weights: not clear (see summary). | Drum separation for syncopation |
+| [essentia-tensorflow](https://essentia.upf.edu) | 2.1b6.dev1389 | **AGPL-3.0** (the wheel bundles TensorFlow, Apache-2.0) | Key detection, CREPE pitch, genre/mood classifiers |
+| Essentia models | fetched by `mireasy-download-models`, not shipped in the package | **CC BY-NC-SA 4.0**. The CREPE model is derived from MIT licensed work. | Genre, mood, voice/instrumental, CREPE pitch |
 | [librosa](https://librosa.org) | 0.11.0 | ISC | Audio loading, spectral features |
 | [mir_eval](https://github.com/craffel/mir_eval) | 0.8.2 | MIT | Rhythm metric utilities |
 | [pyloudnorm](https://github.com/csteinmetz1/pyloudnorm) | 0.2.0 | MIT | LUFS loudness |
 | [numpy](https://numpy.org) | 2.4.6 | BSD-3-Clause | Numerical core |
 | [scipy](https://scipy.org) | 1.17.1 | BSD-3-Clause | Filters, signal processing |
-| [torch](https://pytorch.org) | 2.8.0 | BSD-3-Clause | Neural network runtime (beat_this, demucs) |
+| [torch](https://pytorch.org) | 2.8.0 | BSD-3-Clause | Neural network runtime (beat-this, demucs) |
 | torchaudio | 2.8.0 | BSD-2-Clause | Audio I/O for torch models |
 | [matplotlib](https://matplotlib.org) | 3.11.2 | Matplotlib license (PSF-based, BSD-compatible) | Plots, interactive player |
+| [soundfile](https://python-soundfile.readthedocs.io) | 0.14.0 | BSD-3-Clause | Audio file reading and writing |
 | [sounddevice](https://python-sounddevice.readthedocs.io) | 0.5.5 | MIT | Audio playback |
 | [IPython](https://ipython.org) | 9.17.1 | BSD-3-Clause | Interactive shell |
 
-## Notable transitive / runtime pieces
+## Other pieces worth knowing
 
 | Component | License | Note |
 |---|---|---|
-| soundfile 0.14.0 | BSD-3-Clause | via librosa |
-| audioread 3.1.0 | MIT | via librosa |
-| TensorFlow (bundled inside essentia-tensorflow) | Apache-2.0 | runs the classifier models |
-| Python 3.11 | PSF-2.0 | via conda-forge |
-| FFmpeg (conda-forge build) | **GPL build** | installed by `environment.yml`; invoked as a separate program for decoding (e.g. .m4a) — process-level use, not linked into mireasy |
-| Tcl/Tk (tkinter) | BSD-style | GUI windows for `play()`/`plot()` |
+| soxr, lameenc, libsndfile (inside soundfile) | LGPL | Installed through librosa, beat-this and demucs |
+| certifi, tqdm | MPL-2.0 | Installed through other packages |
+| NVIDIA CUDA libraries | NVIDIA proprietary license | Linux only: 14 packages that PyTorch pulls in from PyPI |
+| TensorFlow (inside essentia-tensorflow) | Apache-2.0 | Runs the classifier models |
+| FFmpeg | GPL or LGPL, depending on the build | Optional, a separate program used to read formats such as .m4a |
+| Python | PSF-2.0 | |
+| Tcl/Tk (tkinter) | BSD-style | GUI windows for `play()` and `plot()` |
 
-## Open questions for the maintainers
-
-1. Is AGPL-3.0 Essentia acceptable as a hard dependency, or should we contact
-   MTG / make those features optional? (See summary point 2.)
-2. Can the package's own code be published as BSD-3-Clause while documenting
-   that the model weights are CC BY-NC-SA 4.0 (non-commercial)? Suggested
-   wording would live in README + LICENSE.
-3. Demucs htdemucs weights: the repo's MIT statement names the code; the
-   weights are hosted on Hugging Face without an explicit statement on the
-   README. Needs one check of the Hugging Face model card.
-4. The conda-forge FFmpeg is its GPL build. Process-level invocation is
-   generally considered fine, but if we ever want to be strict we can depend on
-   the LGPL build instead.
+All other packages in the dependency tree (about 60) carry permissive
+licenses: MIT, BSD, Apache-2.0, ISC or PSF.

@@ -1,30 +1,30 @@
 # Getting help & contributing
 
-Questions, bug reports, and ideas are all welcome — including (especially!)
+Questions, bug reports, and ideas are all welcome, including (especially!)
 from people who have never used GitHub before. This page explains how to reach
 us for each situation.
 
-## I have a question or something went wrong — what do I do?
+## I have a question or something went wrong: what do I do?
 
 The best way to reach us is to **open an issue** on GitHub. An "issue" is just
-a public message to the developers — no programming involved:
+a public message to the developers, no programming involved:
 
 1. Go to **<https://github.com/Atilik/mireasy/issues>**.
 2. If you don't have a (free) GitHub account yet, click **Sign up** and create
-   one — it takes two minutes.
+   one. It takes two minutes.
 3. Click the green **New issue** button.
 4. Give it a short title ("Installer stops at step 3", "What does
    syncopation_score mean?") and describe what happened in the message box.
    Plain language is fine.
-5. Click **Create**. We get notified and will answer in the same thread —
+5. Click **Create**. We get notified and will answer in the same thread, and
    you'll get an email when we do.
 
 Because issues are public, other researchers with the same question will find
-the answer too — that's why we prefer them over private email.
+the answer too. That's why we prefer them over private email.
 
 ## Reporting a bug
 
-Everything above, plus — these three things let us fix problems fast:
+Everything above, plus these three things let us fix problems fast:
 
 - **What you did and what you expected** (e.g. "ran `python -m mireasy
   my_folder/`, expected the shell to open, got the error below").
@@ -32,7 +32,7 @@ Everything above, plus — these three things let us fix problems fast:
   paste it into the issue's message box. Please also mention your macOS
   version and chip (** → About This Mac**).
 - **Your audio format** if the problem concerns a specific file (.wav, .mp3,
-  .m4a, …) — but please don't upload copyrighted music itself.
+  .m4a, …), but please don't upload copyrighted music itself.
 
 ## Requesting a feature
 
@@ -43,7 +43,7 @@ MIR, so knowing *why* shapes *what* we build.
 
 ## Contributing code (pull requests)
 
-Developers are welcome — the workflow is standard:
+Developers are welcome. The workflow is standard:
 
 1. **Fork** the repository and create a branch off `main`.
 2. Set up as in the [installation guide](https://mireasy.readthedocs.io/en/latest/installation.html): a virtual environment,
@@ -51,11 +51,11 @@ Developers are welcome — the workflow is standard:
    route with `environment.yml`, which pins the exact tested versions).
 3. Make your change. Please match the surrounding code style and keep the
    test suite's design rules:
-   - `python run_tests.py` must pass — the default suite is **offline and
+   - `python run_tests.py` must pass. The default suite is **offline and
      fast** (synthetic audio, no model downloads), and new tests should be too.
    - Anything needing networks or heavy models goes behind the
      `MIREASY_RUN_SLOW=1` gate.
-   - New user-facing attributes/metrics need a row in `docs/measures.md` — the
+   - New user-facing attributes/metrics need a row in `docs/measures.md`. The
      doc-drift tests will remind you.
 4. Open a **pull request** against `main` describing what and why. For larger
    changes, open an issue first so we can discuss the approach before you
@@ -64,4 +64,4 @@ Developers are welcome — the workflow is standard:
 ## Code of conduct
 
 Be kind and constructive; assume good faith. This project serves researchers
-from many disciplines — no question is too basic.
+from many disciplines. No question is too basic.

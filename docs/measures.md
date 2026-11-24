@@ -1,6 +1,6 @@
-# mireasy — Feature Documentation
+# mireasy: Feature Documentation
 
-**mireasy** is a Music Information Retrieval (MIR) toolbox for analyzing audio session. It extracts musical features from audio files and exports them as CSV for downstream analysis.
+**mireasy** is a Music Information Retrieval (MIR) toolbox for analyzing audio. It extracts musical features from audio files and exports them as CSV for downstream analysis.
 
 ---
 
@@ -48,6 +48,8 @@ Aspects representing the musical scales, dominant notes, and melodic content.
 | `.scale` | major / minor | Detected scale. |
 | `.key_strength` | 0–1 | Confidence in the key detection. Higher = more tonal clarity. |
 
+Key detection uses Essentia's `KeyExtractor` with its default key profiles (`bgate`). These profiles were built from electronic dance music (Faraldo et al., 2017).
+
 ### Pitch (CREPE)
 
 Pitch detection uses **CREPE** (Kim et al., 2018), a deep learning model for monophonic pitch estimation.
@@ -56,9 +58,9 @@ Pitch detection uses **CREPE** (Kim et al., 2018), a deep learning model for mon
 |-----------|-------|------|-------------|
 | `.pitch` | ~50–2000 | Hz | **Median pitch** across voiced frames (confidence > 0.5). |
 | `.pitch_mean` | ~50–2000 | Hz | **Mean pitch** across voiced frames. |
-| `.pitch_std` | Hz | Hz | **Std deviation of pitch.** Measures pitch range — low = monotone, high = wide melodic range. |
-| `.pitch_conf_mean` | 0–1 | — | **Mean CREPE confidence.** How confident the model is that each frame is pitched. High = clear pitched content, low = noisy/unpitched. |
-| `.pitch_conf_std` | 0–1 | — | **Std deviation of pitch confidence.** High = mixture of pitched and unpitched sections. |
+| `.pitch_std` | Hz | Hz | **Std deviation of pitch.** Measures pitch range, low = monotone, high = wide melodic range. |
+| `.pitch_conf_mean` | 0–1 | n/a | **Mean CREPE confidence.** How confident the model is that each frame is pitched. High = clear pitched content, low = noisy/unpitched. |
+| `.pitch_conf_std` | 0–1 | n/a | **Std deviation of pitch confidence.** High = mixture of pitched and unpitched sections. |
 
 > **What do the numbers mean?**
 > - Pitch of **440 Hz** = A4 (concert pitch)
@@ -78,12 +80,12 @@ Time-related aspects of the songs: beat, tempo, meter, rhythmic emphasis.
 |-----------|-------|------|-------------|
 | `.bpm` | ~30–300 | BPM | **Beats per minute** from BEAT THIS! beat tracking (median inter-beat interval). |
 | `.meter` | 2, 3, 4 | beats/bar | Detected time signature numerator (e.g., 4 for 4/4). |
-| `.beat_times` | — | seconds | Numpy array of detected beat timestamps. |
-| `.onset_times` | — | seconds | Numpy array of detected onset (note attack) timestamps. Requires `.detect_onsets()`. |
+| `.beat_times` | n/a | seconds | Numpy array of detected beat timestamps. |
+| `.onset_times` | n/a | seconds | Numpy array of detected onset (note attack) timestamps. Requires `.detect_onsets()`. |
 | `.beat_ioi_mean` | seconds | s | **Mean inter-beat interval.** The average time between consecutive beats. Related to BPM: `IOI ≈ 60/BPM`. |
-| `.beat_ioi_std` | seconds | s | **Std deviation of inter-beat intervals.** Measures **tempo stability** — low = steady tempo, high = tempo fluctuations or rubato. |
+| `.beat_ioi_std` | seconds | s | **Std deviation of inter-beat intervals.** Measures **tempo stability**: low = steady tempo, high = tempo fluctuations or rubato. |
 | `.onset_ioi_mean` | seconds | s | **Mean inter-onset interval.** Average time between note attacks. |
-| `.onset_ioi_std` | seconds | s | **Std deviation of inter-onset intervals.** Measures **rhythmic regularity** — low = metronomic, high = varied rhythmic patterns. |
+| `.onset_ioi_std` | seconds | s | **Std deviation of inter-onset intervals.** Measures **rhythmic regularity**: low = metronomic, high = varied rhythmic patterns. |
 
 > **What do the numbers mean?**
 > - `beat_ioi_mean` of **0.5s** = 120 BPM
@@ -94,37 +96,55 @@ Time-related aspects of the songs: beat, tempo, meter, rhythmic emphasis.
 
 | Attribute | Range | Unit | Description |
 |-----------|-------|------|-------------|
-| `.toussaint_syncopation_score` | 0–100 | score | **Toussaint syncopation score** using standard beat grid (4/4 assumed). Measures how much rhythmic emphasis falls off the beat. 0 = no syncopation (all onsets on beats), 100 = maximum syncopation. |
+| `.toussaint_syncopation_score` | 0–100 | score | **A syncopation score inspired by Toussaint (2002)** using standard beat grid (4/4 assumed). Measures how far the drum hits fall from the strong positions of the bar. 0 = every hit is on the downbeat, 100 = every hit is on the weakest sixteenth positions. |
 | `.toussaint_syncopation_score_meter` | 0–100 | score | **Meter-aware syncopation score.** Same algorithm but uses detected downbeats and meter for accurate bar alignment. |
 
-> **What do the numbers mean?**
-> - Score of **0–20**: Minimal syncopation (e.g., straight rock beat)
-> - Score of **20–50**: Moderate syncopation (e.g., pop, R&B)
-> - Score of **50+**: Heavy syncopation (e.g., jazz, funk, Afro-Cuban)
+**How it works:**
+1. Separate the drums (Demucs) and detect the drum hits
+2. Place each hit on a grid of sixteenth notes between the detected beats
+3. Give each position a weight: downbeat 5, beat three 4, beats two and four 3, eighth notes 2, sixteenth notes 1. These are the metrical weights of Lerdahl & Jackendoff (1983), as used by Toussaint (2002)
+4. Score = average of (5 minus weight) over all hits, scaled to 0–100
+
+Toussaint (2002) adds up the same weights to get a "metric complexity". Our score is the average per hit, so it is not the same number.
+
+> **What do the numbers mean?** (computed with this formula)
+> - **0**: only the downbeat
+> - **31**: quarter notes on every beat
+> - **53**: straight eighth notes
+> - **60**: son clave
+> - **77**: straight sixteenth notes
+> - **100**: only the off sixteenth positions
+>
+> A steady pattern with many fast notes also scores high. Compare stimuli with a similar note density.
 
 > **CSV mapping:** `.toussaint_syncopation_score` → column `syncopation_score`;
 > `.toussaint_syncopation_score_meter` → column `syncopation_score_meter`.
 > Both columns are exported at every level (stimulus, session, participant).
 
-### Fluctuation (Rhythmic Periodicity)
+### Fluctuation
 
 *Reference: Pampalk, E., Rauber, A., & Merkl, D. (2002). Content-based organization and visualization of music archives.*
 
 | Attribute | Range | Description |
 |-----------|-------|-------------|
-| `.fluctuation` | 0 to ∞ | **Rhythmic periodicity strength.** Measures how much the signal fluctuates at perceptually salient modulation rates (~4 Hz, the "groove" frequency). |
+| `.fluctuation` | 0 to ∞ | **Fluctuation strength.** Measures how much the level in the frequency bands changes over time, with most weight on changes around 4 times per second. |
 
 **How it works:**
-1. Compute a mel spectrogram (40 bands, 23ms frames)
-2. Take the FFT of each band → modulation spectrum
-3. Weight by the Fastl psychoacoustic model: `w(f) = 1/(f/4 + 4/f)` (peak at 4 Hz)
-4. Sum across bands
+1. Compute a mel spectrogram (40 bands, 23ms frames) in decibels
+2. Cut it into 6-second sequences, as in Pampalk et al. (2002)
+3. For each sequence, take the FFT of each band → modulation spectrum up to 10 Hz
+4. Weight by the Fastl psychoacoustic model: `w(f) = 1/(f/4 + 4/f)` (peak at 4 Hz)
+5. Take the median over all sequences, then sum across bands
 
-> **What do the numbers mean?**
-> - **0–50**: Low rhythmic periodicity (ambient, spoken word)
-> - **50–200**: Moderate (ballads, slow tracks)
-> - **200–500**: Strong groove (pop, rock)
-> - **500+**: Very strong rhythmic drive (EDM, dance)
+This is a simplified version of the method of Pampalk et al. (2002). It uses 40 mel bands and decibels instead of their 20 Bark bands and full loudness model, and it skips their filtering steps. Their paper describes a pattern. The single number is our own summary of that pattern.
+
+Because of the 6-second sequences, the value does not depend on the length of the file. A file shorter than 6 seconds is analysed as one shorter sequence. Its value comes out higher, so compare such files only with files of the same length.
+
+> **What do the numbers mean?** (measured)
+> - **0**: silence, a steady tone
+> - **~2.5**: white noise
+> - **3 to 5**: three orchestral recordings
+> - **15 to 25**: the two drum loops and the melody of the demo songs
 
 Session/participant aggregate: `session.average_fluctuation`, `participant.average_fluctuation`.
 
@@ -132,17 +152,17 @@ Session/participant aggregate: `session.average_fluctuation`, `participant.avera
 
 ## 3. Timbre
 
-The "quality" or "texture" of the sound — shape and distribution of spectral energy. All per-frame features are summarized as mean ± std.
+The "quality" or "texture" of the sound, shape and distribution of spectral energy. All per-frame features are summarized as mean ± std.
 
 ### Spectral Features (librosa)
 
 | Attribute | Range | Unit | Description |
 |-----------|-------|------|-------------|
-| `.spectral_centroid_mean/std` | 0 to sr/2 | Hz | **"Brightness"** — the weighted mean of frequencies. Higher = brighter/tinnier sound, lower = darker/warmer. |
+| `.spectral_centroid_mean/std` | 0 to sr/2 | Hz | **"Brightness"**: the weighted mean of frequencies. Higher = brighter/tinnier sound, lower = darker/warmer. |
 | `.spectral_bandwidth_mean/std` | 0 to sr/2 | Hz | **Frequency spread** around the centroid. Narrow = pure/tonal, wide = noisy/rich timbre. |
-| `.spectral_rolloff_mean/std` | 0 to sr/2 | Hz | **Energy concentration** — frequency below which 85% of spectral energy sits. High = treble-heavy, low = bass-heavy. |
-| `.spectral_flatness_mean/std` | 0 to 1 | — | **Tonality measure.** 0 = pure tone (all energy in one frequency), 1 = white noise (energy spread equally). |
-| `.zcr_mean/std` | 0 to 1 | — | **Zero-crossing rate** — how often the signal crosses zero amplitude per frame. High = noisy/percussive, low = smooth/tonal. |
+| `.spectral_rolloff_mean/std` | 0 to sr/2 | Hz | **Energy concentration**: frequency below which 85% of spectral energy sits. High = treble-heavy, low = bass-heavy. |
+| `.spectral_flatness_mean/std` | 0 to 1 | n/a | **Tonality measure.** 0 = pure tone (all energy in one frequency), 1 = white noise (energy spread equally). |
+| `.zcr_mean/std` | 0 to 1 | n/a | **Zero-crossing rate**: how often the signal crosses zero amplitude per frame. High = noisy/percussive, low = smooth/tonal. |
 
 > **What do the numbers mean?**
 > - Centroid of **1000 Hz** = warm/dark sound; **4000+ Hz** = bright/harsh
@@ -155,18 +175,21 @@ The "quality" or "texture" of the sound — shape and distribution of spectral e
 
 | Attribute | Range | Description |
 |-----------|-------|-------------|
-| `.irregularity` | 0 to ~1 | **Spectral irregularity** — measures how jagged/smooth the frequency spectrum is. |
+| `.irregularity` | 0 to ~1 | **Spectral irregularity**: measures how much the level differs between neighboring frequency bins. |
 
 **How it works:**
 
 For each frame, compute: `irregularity = Σ(aₖ − aₖ₊₁)² / Σ(aₖ²)`
 
-where `aₖ` is the amplitude of the k-th frequency bin.
+where `aₖ` is the amplitude of the k-th frequency bin. The result is the average over all frames.
 
-> **What do the numbers mean?**
-> - **~0.0**: Very smooth spectrum (pure tones, sine waves)
-> - **~0.1–0.3**: Moderate irregularity (most music)
-> - **~0.5+**: Very jagged spectrum (noise, distortion, complex timbres)
+This is the formula of Jensen (1999), applied to all frequency bins. Jensen applies it to the harmonics of a note, so the numbers are not comparable with the ones in that work.
+
+> **What do the numbers mean?** (measured)
+> - **0**: flat spectrum (a click)
+> - **~0.25**: white noise
+> - **~0.3–0.5**: music (orchestral recordings and the demo songs)
+> - **~0.64**: pure sine tone
 
 > **CSV mapping:** `.irregularity` → column `spectral_irregularity`.
 
@@ -193,7 +216,7 @@ Basic measures that don't fit the three categories above but are always useful: 
 | `.loudness_lufs` | −70 to 0 | LUFS | **Integrated loudness** per ITU-R BS.1770-4. Measures perceived loudness over the entire file. −14 LUFS is a common streaming target. More negative = quieter. NaN for clips shorter than the 400 ms gating block. |
 | `.loudness_rms_db` | −∞ to 0 | dBFS | **RMS level in decibels** relative to full scale. 0 dBFS = maximum digital level. Typical music sits around −10 to −20 dBFS. |
 | `.rms` | 0 to 1 | linear | **Mean RMS energy** (librosa). Linear amplitude measure. Higher = louder. |
-| `.crest_factor_db` | 0 to ~30 | dB | **Crest factor** — peak level divided by RMS level, in dB: a dynamic-range measure. Sustained or heavily compressed material (a pad, limited pop) sits around 3–8 dB; sparse, transient material (solo drums, plucked notes with silence between) reaches 15–25 dB. A pure sine is 3.01 dB. NaN for silence. |
+| `.crest_factor_db` | 0 to ~30 | dB | **Crest factor**: peak level divided by RMS level, in dB: a dynamic-range measure. Sustained or heavily compressed material (a pad, limited pop) sits around 3–8 dB; sparse, transient material (solo drums, plucked notes with silence between) reaches 15–25 dB. A pure sine is 3.01 dB. NaN for silence. |
 
 > **What do the numbers mean?**
 > - LUFS of **−14** ≈ Spotify loudness normalization target
@@ -209,7 +232,7 @@ Classification uses **Essentia** neural network models with Discogs-EffNet embed
 | `.genre` | string | Top predicted genre from Discogs taxonomy (~400 genres). Equal to `genre_top5[0]`'s label. |
 | `.genre_top5` | list | Top 5 genre predictions as `(label, confidence)` pairs, confidence in [0–1]. |
 | `.voice_instrumental` | "voice" / "instrumental" | Whether the track contains vocals. |
-| `.mood` | dict, values 0–1 | Mood probabilities: `happy`, `sad`, `aggressive`, `relaxed`. Values sum to ~1. |
+| `.mood` | dict, values 0–1 | Mood probabilities: `happy`, `sad`, `aggressive`, `relaxed`. Each value comes from its own classifier, so the four do not add up to 1. |
 
 > **CSV mapping:** the CSV keeps only the **top-1** prediction of `genre_top5`:
 > column `genre` = `genre_top5[0]` label, column `genre_confidence` =
@@ -315,14 +338,17 @@ The same list, grouped by feature and with links, is on the [References](referen
 - Alonso-Jiménez, P., Serra, X., & Bogdanov, D. (2022). Music representation learning based on editorial metadata from Discogs. *Proceedings of the 23rd ISMIR*.
 - Bogdanov, D., Wack, N., Gómez, E., Gulati, S., Herrera, P., Mayor, O., Roma, G., Salamon, J., Zapata, J. R., & Serra, X. (2013). Essentia: An audio analysis library for music information retrieval. *Proceedings of the 14th ISMIR*, 493–498.
 - Défossez, A. (2021). Hybrid spectrogram and waveform source separation. *Proceedings of the ISMIR 2021 Workshop on Music Source Separation (MDX)*.
+- Faraldo, Á., Jordà, S., & Herrera, P. (2017). A multi-profile method for key estimation in EDM. *Proceedings of the 2017 AES International Conference on Semantic Audio*.
 - Foscarin, F., Schlüter, J., & Widmer, G. (2024). Beat This! Accurate beat tracking without DBN postprocessing. *Proceedings of the 25th ISMIR*.
 - ITU-R BS.1770-4 (2015). Algorithms to measure audio programme loudness and true-peak audio level.
 - Jensen, K. (1999). *Timbre Models of Musical Sounds* (Rapport 99/7). University of Copenhagen.
 - Kim, J. W., Salamon, J., Li, P., & Bello, J. P. (2018). CREPE: A convolutional representation for pitch estimation. *Proceedings of ICASSP 2018*.
+- Lerdahl, F., & Jackendoff, R. (1983). *A Generative Theory of Tonal Music*. MIT Press.
 - McFee, B., Raffel, C., Liang, D., Ellis, D. P. W., McVicar, M., Battenberg, E., & Nieto, O. (2015). librosa: Audio and music signal analysis in Python. *Proceedings of the 14th Python in Science Conference (SciPy)*, 18–25.
 - Pampalk, E., Rauber, A., & Merkl, D. (2002). Content-based organization and visualization of music archives. *Proceedings of ACM Multimedia 2002*, 570–579.
 - Raffel, C., McFee, B., Humphrey, E. J., Salamon, J., Nieto, O., Liang, D., & Ellis, D. P. W. (2014). mir_eval: A transparent implementation of common MIR metrics. *Proceedings of the 15th ISMIR*.
 - Rouard, S., Massa, F., & Défossez, A. (2023). Hybrid Transformers for music source separation. *Proceedings of ICASSP 2023*.
 - Salakka, I., Pitkäniemi, A., Pentikäinen, E., Mikkonen, K., Saari, P., Toiviainen, P., & Särkämö, T. (2021). What makes music memorable? Relationships between acoustic musical features and music-evoked emotions and memories in older adults. *PLoS ONE, 16*(5), e0251692.
 - Steinmetz, C. J., & Reiss, J. D. (2021). pyloudnorm: A simple yet flexible loudness meter in Python. *150th Convention of the Audio Engineering Society*.
+- Toussaint, G. T. (2002). A mathematical analysis of African, Brazilian, and Cuban clave rhythms. *Proceedings of BRIDGES: Mathematical Connections in Art, Music and Science*, 157–168.
 - Toussaint, G. T. (2013). *The Geometry of Musical Rhythm: What Makes a "Good" Rhythm Good?* CRC Press.

@@ -1,7 +1,7 @@
 """Tests for the model downloader (mireasy/download_models.py, installed as the
 `mireasy-download-models` command) and the root download_models.py wrapper.
 
-Network tests — gated behind MIREASY_RUN_SLOW=1 like the model tests, so the
+Network tests, gated behind MIREASY_RUN_SLOW=1 like the model tests, so the
 default suite stays offline-safe. Catches upstream URL rot at essentia.upf.edu
 before a fresh user does.
 """

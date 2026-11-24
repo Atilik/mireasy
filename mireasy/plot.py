@@ -3,7 +3,7 @@ import numpy as np
 import librosa
 import librosa.display
 
-# NOTE: no pyplot, no matplotlib.use() here — see play.py. Figures are plain
+# NOTE: no pyplot, no matplotlib.use() here, see play.py. Figures are plain
 # matplotlib.figure.Figure objects, so the user's backend (e.g. notebook
 # inline) is never changed by importing mireasy.
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -31,10 +31,10 @@ def plot_beats(stimulus, xlim=None, ylim=None):
         
     ax.set_xlabel("Time (s)")
     ax.set_ylabel("Amplitude")
-    ax.set_title(f"Beats — {stimulus.audio_file_name}")
+    ax.set_title(f"Beats: {stimulus.audio_file_name}")
     ax.legend(loc="upper right")
     fig.tight_layout()
-    _show_figure(fig, title=f"Beats — {stimulus.audio_file_name}")
+    _show_figure(fig, title=f"Beats: {stimulus.audio_file_name}")
 
 
 def plot_waveform(stimulus, xlim=None, ylim=None):
@@ -52,9 +52,9 @@ def plot_waveform(stimulus, xlim=None, ylim=None):
         
     ax.set_xlabel("Time (s)")
     ax.set_ylabel("Amplitude")
-    ax.set_title(f"Waveform — {stimulus.audio_file_name}")
+    ax.set_title(f"Waveform: {stimulus.audio_file_name}")
     fig.tight_layout()
-    _show_figure(fig, title=f"Waveform — {stimulus.audio_file_name}")
+    _show_figure(fig, title=f"Waveform: {stimulus.audio_file_name}")
 
 
 def plot_beats_and_onsets(stimulus, xlim=None, ylim=None):
@@ -85,10 +85,10 @@ def plot_beats_and_onsets(stimulus, xlim=None, ylim=None):
     if ylim is not None:
         ax.set_ylim(ylim)
 
-    ax.set_title(f"Beats + Onsets — {stimulus.audio_file_name}")
+    ax.set_title(f"Beats + Onsets: {stimulus.audio_file_name}")
     ax.legend(loc="upper right")
     fig.tight_layout()
-    _show_figure(fig, title=f"Beats + Onsets — {stimulus.audio_file_name}")
+    _show_figure(fig, title=f"Beats + Onsets: {stimulus.audio_file_name}")
 
 
 def plot_interactive(stimulus, xlim=None, ylim=None):
@@ -125,7 +125,7 @@ def plot_interactive(stimulus, xlim=None, ylim=None):
     # Tkinter window
     root = _get_tk_root()
     win = tk.Toplevel(root)
-    win.title(f"Plot — {stimulus.audio_file_name}")
+    win.title(f"Plot: {stimulus.audio_file_name}")
     win.configure(bg=BG)
     win.resizable(True, True)
 
@@ -250,7 +250,7 @@ def plot_interactive(stimulus, xlim=None, ylim=None):
 
     def _toggle_beats():
         if not state["beats_on"]:
-            # Turning ON — trigger lazy detection if needed
+            # Turning ON, trigger lazy detection if needed
             if stimulus._beat_times is None:
                 status_var.set("Detecting beats...")
                 win.update_idletasks()
@@ -265,7 +265,7 @@ def plot_interactive(stimulus, xlim=None, ylim=None):
 
     def _toggle_onsets():
         if not state["onsets_on"]:
-            # Turning ON — trigger lazy detection if needed
+            # Turning ON, trigger lazy detection if needed
             if stimulus.onset_times is None:
                 status_var.set("Detecting onsets (may run separation)...")
                 win.update_idletasks()
@@ -308,7 +308,7 @@ def plot_session_boxplots(session):
     if not has_bpm and not has_sync:
         session._process_all_items()
 
-    # Gather data — only include items that have values
+    # Gather data, only include items that have values
     bpms = [s.bpm for s in session.items if getattr(s, '_bpm', None) is not None]
     lufs = [s.loudness_lufs for s in session.items]  # always available
     syncs = [s.toussaint_syncopation_score for s in session.items
@@ -390,7 +390,7 @@ def plot_spectrogram(stimulus, xlim=None, ylim=None, scale='mel'):
     # Tkinter window
     root = _get_tk_root()
     win = tk.Toplevel(root)
-    win.title(f"Spectrogram ({title_scale}) — {stimulus.audio_file_name}")
+    win.title(f"Spectrogram ({title_scale}): {stimulus.audio_file_name}")
     win.configure(bg=BG)
     win.resizable(True, True)
 
@@ -418,7 +418,7 @@ def plot_spectrogram(stimulus, xlim=None, ylim=None, scale='mel'):
     if ylim is not None:
         ax.set_ylim(ylim)
 
-    ax.set_title(f"{title_scale} Spectrogram — {stimulus.audio_file_name}",
+    ax.set_title(f"{title_scale} Spectrogram: {stimulus.audio_file_name}",
                  color=FG, fontsize=13, fontweight='bold')
     ax.set_xlabel("Time (s)", color=FG)
     ax.set_ylabel("Frequency (Hz)", color=FG)
@@ -441,7 +441,7 @@ def plot_spectrogram(stimulus, xlim=None, ylim=None, scale='mel'):
 def plot_pitch(stimulus, xlim=None):
     """
     Plot CREPE pitch detection over time, colored by confidence.
-    Similar to the CREPE activation plot — pitch vs time with
+    Similar to the CREPE activation plot, pitch vs time with
     confidence mapped to color intensity (magma colormap).
     """
     BG     = "#1e1e2e"
@@ -454,7 +454,7 @@ def plot_pitch(stimulus, xlim=None):
 
     root = _get_tk_root()
     win = tk.Toplevel(root)
-    win.title(f"Pitch (CREPE) — {stimulus.audio_file_name}")
+    win.title(f"Pitch (CREPE): {stimulus.audio_file_name}")
     win.configure(bg=BG)
     win.resizable(True, True)
 
@@ -489,7 +489,7 @@ def plot_pitch(stimulus, xlim=None):
     else:
         ax.set_xlim(0, time[-1] if len(time) > 0 else 1)
 
-    ax.set_title(f"CREPE Pitch — {stimulus.audio_file_name}",
+    ax.set_title(f"CREPE Pitch: {stimulus.audio_file_name}",
                  color=FG, fontsize=13, fontweight='bold')
     ax.set_xlabel("Time (s)", color=FG)
     ax.set_ylabel("Pitch (Hz)", color=FG)

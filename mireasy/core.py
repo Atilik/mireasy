@@ -117,7 +117,7 @@ def stimulus_help(stimulus):
     print("  .meter                     - Beats per bar (2, 3 or 4)")
     print("  .beat_times                - numpy array of detected beats (seconds)")
     print("  .onset_times               - numpy array of detected onsets (seconds)")
-    print("  .toussaint_syncopation_score       - Toussaint syncopation score [0–100]")
+    print("  .toussaint_syncopation_score       - Syncopation score inspired by Toussaint [0–100]")
     print("  .toussaint_syncopation_score_meter - Meter-aware syncopation score [0–100]")
     print("  .separated_drums           - Only drums audio")
     print("  .key / .scale              - Musical key and scale (major/minor)")
@@ -132,7 +132,7 @@ def stimulus_help(stimulus):
     print("  .pitch_time/freq/conf      - CREPE per-frame arrays (s, Hz, [0–1])")
     print("  .beat_ioi_mean/std         - Inter-beat interval (seconds)")
     print("  .onset_ioi_mean/std        - Inter-onset interval (seconds)")
-    print("  .fluctuation               - Rhythmic periodicity [0–∞] (Pampalk, 2002)")
+    print("  .fluctuation               - Fluctuation strength [0–∞] (after Pampalk et al., 2002)")
     print("  .irregularity              - Spectral irregularity [0–1] (Jensen, 1999)")
     print("  .spectral_centroid_mean/std - Brightness (Hz)")
     print("  .spectral_bandwidth_mean/std- Frequency spread (Hz)")
@@ -144,7 +144,7 @@ def stimulus_help(stimulus):
     print("  .play(x, y)               : Interactive player (play/pause + toggle beats/onsets)")
     print("  .separate()                : Isolate drums using Demucs")
     print("  .detect_onsets()           : Onset detection")
-    print("  .syncopation_score()       : Calculate Toussaint score")
+    print("  .syncopation_score()       : Calculate the syncopation score")
     print("  .classify()                : Run ALL classifiers + pitch at once")
     print("  .save(path)                : Save current attributes to CSV")
     print("  .save_timeseries(path)     : Save all time series as .npz")
@@ -173,7 +173,7 @@ def stimulus_print(stimulus):
     print(f"  RMS      : {stimulus.rms:.6f}  [0–1]")
     print(f"  Crest    : {stimulus.crest_factor_db:.2f} dB  [0–∞] (peak/RMS, dynamic range)")
 
-    # BPM (lazy — don't trigger)
+    # BPM (lazy, don't trigger)
     if getattr(stimulus, '_bpm', None) is not None:
         print(f"  BPM      : {stimulus.bpm}  [~30–300]")
     else:
@@ -193,7 +193,7 @@ def stimulus_print(stimulus):
     if stimulus.onset_times is not None:
         print(f"  Onsets   : {len(stimulus.onset_times)} detected")
 
-    # Genre (lazy — don't trigger)
+    # Genre (lazy, don't trigger)
     if getattr(stimulus, '_genre_predictions', None) is not None:
         top = stimulus._genre_predictions[0]
         print(f"  Genre    : {top[0]}  ({top[1]*100:.1f}%)  [0–100%]")
@@ -208,7 +208,7 @@ def stimulus_print(stimulus):
         if len(voiced) > 0:
             print(f"  Pitch    : {float(_np.median(voiced)):.1f} Hz  [~50–2000]")
 
-    # Spectral features (always available — computed at init)
+    # Spectral features (always available, computed at init)
     print(f"  Fluct.   : {stimulus.fluctuation:.2f}  [0–∞]")
     print(f"  Irreg.   : {stimulus.irregularity:.4f}  [0–1]")
     if getattr(stimulus, '_spectral_features', None) is not None:
@@ -222,7 +222,7 @@ def stimulus_print(stimulus):
 
 def stimulus_print_all(stimulus):
     """Print the current value of every attribute on this Stimulus."""
-    print("\n=== Stimulus — All Attributes ===")
+    print("\n=== Stimulus: All Attributes ===")
     print(f"  File: {stimulus.audio_file_name}\n")
     
     # Explicitly print properties (lazy loaded)
@@ -239,7 +239,7 @@ def stimulus_print_all(stimulus):
     else:
         print("  beat_times                : (Not calculated)")
 
-    # Loudness (always available — computed on init)
+    # Loudness (always available, computed on init)
     print(f"  loudness_lufs             : {stimulus.loudness_lufs:.2f} LUFS")
     print(f"  loudness_rms_db           : {stimulus.loudness_rms_db:.2f} dBFS")
     print(f"  rms                       : {stimulus.rms:.6f}")

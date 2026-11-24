@@ -1,5 +1,5 @@
 """
-mireasy — an interactive music information retrieval (MIR) toolbox.
+mireasy, an interactive music information retrieval (MIR) toolbox.
 
 Library use (run Python from the repo folder):
 
@@ -18,7 +18,7 @@ __all__ = ["Stimulus", "Session", "Participant"]
 
 
 def __getattr__(name):
-    # Lazy exports: `import mireasy.dsp` (and the tests) stays lightweight —
+    # Lazy exports: `import mireasy.dsp` (and the tests) stays lightweight,
     # the full ML stack (torch, TensorFlow, ...) loads only when one of these
     # classes is first used.
     if name in __all__:

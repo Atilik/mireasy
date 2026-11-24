@@ -23,7 +23,7 @@ def _load_audio(file, samplerate, channels):
     """
     Load an audio file as a float32 tensor (channels, samples) at the model's
     sample rate. Demucs must see audio at its training rate (44.1 kHz for
-    htdemucs) — a 48 kHz file fed as-is degrades the separation. librosa
+    htdemucs), a 48 kHz file fed as-is degrades the separation. librosa
     also decodes .m4a (via ffmpeg), which torchaudio cannot in this env.
     """
     y, _ = librosa.load(file, sr=samplerate, mono=False)
@@ -66,7 +66,7 @@ def separate(file, target_source="drums", gpu=None):
     """
     global _MODEL
 
-    # Validate inputs up front — before any audio or model loading
+    # Validate inputs up front, before any audio or model loading
     SOURCE = ['vocals', 'drums', 'bass', 'other']
     if target_source not in SOURCE:
         raise ValueError(f"Unknown target source '{target_source}'. Choose from: {SOURCE}")
@@ -87,7 +87,7 @@ def separate(file, target_source="drums", gpu=None):
         if torch.cuda.is_available():
             device = torch.device("cuda")
         else:
-            print("CUDA not available — falling back to CPU.")
+            print("CUDA not available, falling back to CPU.")
             device = torch.device("cpu")
     else:
         device = torch.device(gpu)
@@ -100,8 +100,8 @@ def separate(file, target_source="drums", gpu=None):
 
     # Apply separation. shifts=0 is required for reproducible measurements:
     # Demucs's default (shifts=1) shifts the input by a random 0–0.5 s before
-    # separating, so the same file gives a slightly different stem — and a
-    # different syncopation score — on every run. The ~0.1 dB quality gain of
+    # separating, so the same file gives a slightly different stem, and a
+    # different syncopation score, on every run. The ~0.1 dB quality gain of
     # the shift trick is irrelevant for onset detection.
     waveform = waveform.unsqueeze(0)
     sources = apply_model(model, waveform, shifts=0, split=True, overlap=0.25,

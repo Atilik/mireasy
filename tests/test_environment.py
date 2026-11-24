@@ -20,14 +20,14 @@ def _run(code, **env):
 def test_importing_torch_first_does_not_crash():
     # Regression: conda-forge numpy + pip torch loaded two OpenMP runtimes, and
     # importing torch before numpy aborted the process (OMP Error #15).
-    # Fails in environments built before the fix — rebuild from environment.yml.
+    # Fails in environments built before the fix, rebuild from environment.yml.
     r = _run("import torch; import numpy; import mireasy.mireasy; print('ok')")
     assert r.returncode == 0, f"exit {r.returncode}: {r.stderr[-1500:]}"
     assert "ok" in r.stdout
 
 
 def test_import_does_not_change_matplotlib_backend():
-    # Regression (#18): play.py/plot.py called matplotlib.use('Agg') at import,
+    # Regression: play.py/plot.py called matplotlib.use('Agg') at import,
     # silently killing inline plots for anyone using mireasy in a notebook.
     code = ("import matplotlib; matplotlib.use('pdf')\n"
             "import mireasy.mireasy, mireasy.play, mireasy.plot, mireasy.rhythm\n"
@@ -39,7 +39,7 @@ def test_import_does_not_change_matplotlib_backend():
 
 def test_analysis_works_without_portaudio(tmp_path):
     # Linux machines without the PortAudio system library can't import
-    # sounddevice — that must only disable playback, not the whole package
+    # sounddevice, that must only disable playback, not the whole package
     (tmp_path / "sounddevice.py").write_text(
         "raise OSError('PortAudio library not found')\n")
     code = ("import mireasy.mireasy, mireasy.play as p\n"

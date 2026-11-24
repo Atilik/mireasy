@@ -12,8 +12,8 @@ Please see the [References](references.md) page for more information on the inco
 software and download the analysis models once. Your audio files and your results never
 leave your machine.
 
-You can work in two ways: an interactive shell to load, analyze, and visualize audio —
-individually, by session (folder of songs), or by participant (folder of sessions) — or from
+You can work in two ways: an interactive shell to load, analyze, and visualize audio
+individually, by session (folder of songs), or by participant (folder of sessions); or from
 your own Python scripts and notebooks ([Measures](measures.md)).
 
 ---
@@ -33,7 +33,7 @@ You get a CSV with one row per stimulus and 45 columns of measures. `bpm` is you
 tempo, `loudness_lufs` your loudness, and `spectral_centroid_mean` your spectral
 brightness.
 
-**Try it right now:** MIReasy ships [`mireasy/sample_stimuli/`](https://github.com/Atilik/mireasy/tree/main/mireasy/sample_stimuli) —
+**Try it right now:** MIReasy ships [`mireasy/sample_stimuli/`](https://github.com/Atilik/mireasy/tree/main/mireasy/sample_stimuli),
 five fully synthetic test "songs" (no copyrighted audio; tempo and key are in
 the filenames so you can check the tool). `mireasy --demo` opens them, and
 analyzing that folder gives:
@@ -46,11 +46,11 @@ analyzing that folder gives:
 | 04_chords_c_major_80bpm.mp3 | 81.1 | 31 | C | major | −16.7 | 861 | … |
 | 05_quiet_ambient_no_drums.mp3 | 81.1 ‡ | 0 | A | major | −31.2 | 251 | … |
 
-(…plus genre, mood, pitch, and more — 45 columns in total, grouped by topic;
+(…plus genre, mood, pitch, and more, 45 columns in total, grouped by topic;
 see [Measures](measures.md) for every column's meaning.)
 
 The sample set is deliberately imperfect, because real results are too:
-**†** file 02 shows a *double-time octave error* (187.5 ≈ 2 × 95) — a known
+**†** file 02 shows a *double-time octave error* (187.5 ≈ 2 × 95): a known
 behavior of beat trackers on off-beat-heavy material; **‡** beat-based measures
 are not meaningful for non-rhythmic audio like file 05, and the key of
 drums-only files (01, 02) is likewise noise. Knowing which measures apply to
@@ -60,7 +60,7 @@ which stimuli is part of using MIR responsibly.
 
 ## Features
 
-- **Rhythm & Syncopation**: Beat and downbeat tracking using BEAT THIS!, tempo estimation (BPM), and Toussaint syncopation scoring.
+- **Rhythm & Syncopation**: Beat and downbeat tracking using BEAT THIS!, tempo estimation (BPM), and a syncopation score inspired by Toussaint.
 - **Stem Separation**: Drum separation using Demucs.
 - **Timbre & Dynamics**: LUFS loudness, RMS energy, spectral irregularity, and fluctuation strength.
 - **Harmony & Pitch**: Key and scale extraction (Essentia), and frame-level pitch tracking (CREPE).

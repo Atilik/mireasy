@@ -21,9 +21,9 @@ from essentia.standard import PitchCREPE
 from .paths import EFFNET_FILE, models_dir
 
 # Model files live in mireasy.paths.models_dir() (per-user cache, or the
-# package folder / $MIREASY_MODELS_DIR — see that module). Downloaded by the
+# package folder / $MIREASY_MODELS_DIR, see that module). Downloaded by the
 # `mireasy-download-models` command.
-_DOWNLOAD_HINT = ("run: mireasy-download-models  "
+_DOWNLOAD_HINT = ("Run: mireasy-download-models  "
                   "(in a source checkout: python download_models.py)")
 
 
@@ -72,7 +72,7 @@ def _get_embedding_model():
     effnet_path = _model_path(EFFNET_FILE)
     if not os.path.isfile(effnet_path):
         raise FileNotFoundError(
-            f"model file {EFFNET_FILE} not installed — {_DOWNLOAD_HINT}"
+            f"model file {EFFNET_FILE} not installed. {_DOWNLOAD_HINT}"
         )
 
     _embedding_model = TensorflowPredictEffnetDiscogs(
@@ -95,7 +95,7 @@ def _get_head_model(name):
 
     if not os.path.isfile(pb_path):
         raise FileNotFoundError(
-            f"model file {base}.pb not installed — {_DOWNLOAD_HINT}"
+            f"model file {base}.pb not installed. {_DOWNLOAD_HINT}"
         )
 
     # genre_discogs400 uses different node names than the others
@@ -201,7 +201,7 @@ def _classify_mood_from_embeddings(audio_file_path, embeddings):
 
 def classify_all(audio_file_path):
     """
-    Run ALL classifiers on shared embeddings (fast — one embedding pass).
+    Run ALL classifiers on shared embeddings (fast, one embedding pass).
 
     Returns dict:
         genre:            list of (label, confidence)
@@ -221,7 +221,7 @@ def detect_pitch_crepe(audio_file_path):
     Pitch detection using CREPE (medium model).
 
     Returns:
-        (time, frequency, confidence) — numpy arrays.
+        (time, frequency, confidence), numpy arrays.
         time: timestamps in seconds
         frequency: pitch in Hz (0 where unvoiced)
         confidence: detection confidence [0, 1]
@@ -233,7 +233,7 @@ def detect_pitch_crepe(audio_file_path):
         crepe_path = _model_path(_CREPE_FILE)
         if not os.path.isfile(crepe_path):
             raise FileNotFoundError(
-                f"model file {_CREPE_FILE} not installed — {_DOWNLOAD_HINT}"
+                f"model file {_CREPE_FILE} not installed. {_DOWNLOAD_HINT}"
             )
         _crepe_model = PitchCREPE(graphFilename=crepe_path)
 
@@ -247,10 +247,10 @@ def detect_key(audio_file_path):
     Detect musical key and scale using Essentia's KeyExtractor.
 
     Returns:
-        (key, scale, strength) — e.g. ("C", "minor", 0.85)
-        key: str — tonic pitch class (C, C#, D, …, B)
-        scale: str — "major" or "minor"
-        strength: float — confidence of the key estimation [0, 1]
+        (key, scale, strength), e.g. ("C", "minor", 0.85)
+        key: str, tonic pitch class (C, C#, D, …, B)
+        scale: str, "major" or "minor"
+        strength: float, confidence of the key estimation [0, 1]
     """
     _silence_essentia()
 

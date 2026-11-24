@@ -1,4 +1,4 @@
-"""Where the Essentia models live (mireasy/paths.py) — the piece that makes a
+"""Where the Essentia models live (mireasy/paths.py), the piece that makes a
 non-editable `pip install mireasy` work (issue #21). Offline and fast."""
 import os
 import sys

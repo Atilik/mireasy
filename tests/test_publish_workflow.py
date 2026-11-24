@@ -1,4 +1,4 @@
-"""Guards for .github/workflows/publish.yml — the PyPI release path (issue #21).
+"""Guards for .github/workflows/publish.yml, the PyPI release path (issue #21).
 Offline and fast: parses the YAML and checks the contract, not GitHub."""
 import os
 

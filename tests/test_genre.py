@@ -1,7 +1,7 @@
 """Tests for mireasy/genre.py.
 
 The TF-model classifiers need .pb files under mireasy/models/ (currently
-absent) — those tests auto-skip and will activate once models are installed.
+absent), those tests auto-skip and will activate once models are installed.
 detect_key and the 16 kHz loader are algorithmic (no model files) and run on
 tiny dummy audio.
 """
@@ -22,7 +22,7 @@ SR = 44100
 
 @pytest.fixture(scope="module")
 def c_major_wav(tmp_path_factory):
-    """3 s C-major chord (C4+E4+G4+C5) — unambiguous key content."""
+    """3 s C-major chord (C4+E4+G4+C5), unambiguous key content."""
     t = np.linspace(0, 3.0, SR * 3, endpoint=False)
     y = sum(0.2 * np.sin(2 * np.pi * f * t)
             for f in (261.63, 329.63, 392.00, 523.25))
@@ -31,7 +31,7 @@ def c_major_wav(tmp_path_factory):
     return p
 
 
-# ── detect_key (algorithmic — always runs) ──────────────────
+# ── detect_key (algorithmic, always runs) ──────────────────
 
 def test_detect_key_c_major(c_major_wav):
     key, scale, strength = detect_key(c_major_wav)
@@ -56,11 +56,11 @@ def test_load_audio_16k_resamples(sine_wav):
 
 # ── TF-model classifiers (auto-activate when models installed) ──
 # EffNet needs one full mel patch (~2.1 s at 16 kHz), so classifier tests
-# use a 4 s fixture — the shared 2 s sine_wav is deliberately too short.
+# use a 4 s fixture, the shared 2 s sine_wav is deliberately too short.
 
 @pytest.fixture(scope="module")
 def long_wav(tmp_path_factory):
-    """4 s tone mixture — long enough for a Discogs-EffNet patch."""
+    """4 s tone mixture, long enough for a Discogs-EffNet patch."""
     t = np.linspace(0, 4.0, SR * 4, endpoint=False)
     y = 0.3 * np.sin(2 * np.pi * 220 * t) + 0.2 * np.sin(2 * np.pi * 660 * t)
     p = str(tmp_path_factory.mktemp("clf") / "long_tone.wav")
@@ -73,7 +73,7 @@ def test_classify_too_short_audio_raises_clearly(sine_wav):
     # Regression: < ~2.1 s used to surface as a cryptic Essentia TypeError
     from mireasy.genre import classify_genre
     with pytest.raises(ValueError, match="too short"):
-        classify_genre(sine_wav)               # 2 s — below one EffNet patch
+        classify_genre(sine_wav)               # 2 s, below one EffNet patch
 
 
 @pytest.mark.skipif(not MODELS_PRESENT, reason="mireasy/models/*.pb not installed")

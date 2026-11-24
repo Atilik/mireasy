@@ -27,7 +27,7 @@ SLOW = pytest.mark.skipif(
 
 @pytest.fixture
 def ffmpeg(monkeypatch):
-    """Put the env's ffmpeg on PATH (as `conda activate` does) — .m4a
+    """Put the env's ffmpeg on PATH (as `conda activate` does), .m4a
     decoding goes through it. Skips if no ffmpeg is available."""
     env_bin = os.path.dirname(sys.executable)
     if os.path.exists(os.path.join(env_bin, "ffmpeg")):
@@ -102,7 +102,7 @@ def test_load_audio_m4a(clicks_m4a):
 def test_separate_disables_random_shifts(sine_wav, monkeypatch):
     # Regression: Demucs's default shifts=1 applies a random 0–0.5 s time
     # shift before separating, so identical input gave slightly different
-    # stems — and syncopation scores that drifted a few points between runs.
+    # stems, and syncopation scores that drifted a few points between runs.
     # Capture the real call's arguments with a stand-in model + apply_model.
     import torch
     import mireasy.separate as sep
@@ -140,7 +140,7 @@ def test_separate_drums_end_to_end(click_wav):
 def test_separate_48k_at_model_rate(clicks_48k):
     target, accompaniment, sr = separate(clicks_48k, target_source="drums")
     assert sr == 44100 and len(target) == 3 * 44100
-    # The stems must add back up to the input — proves rate and timing are
+    # The stems must add back up to the input, proves rate and timing are
     # right, independent of which stem Demucs puts the clicks in
     mix, _ = librosa.load(clicks_48k, sr=44100, mono=True)
     assert np.corrcoef(mix, target + accompaniment)[0, 1] > 0.9
@@ -155,10 +155,10 @@ def test_separate_m4a(clicks_m4a):
 @SLOW
 def test_separate_loop_stable_and_reproducible(click_wav):
     # Two regressions in one: (1) torch used to be pinned to 1 thread over a
-    # segfault fear in loops — re-verified stable multi-threaded; (2) stems
+    # segfault fear in loops, re-verified stable multi-threaded; (2) stems
     # used to differ between runs because of Demucs's random-shift default
     # (shifts=1). With shifts=0 the same input must give the same stem,
-    # bit for bit — that is what makes the syncopation score repeatable.
+    # bit for bit, that is what makes the syncopation score repeatable.
     import torch
     assert torch.get_num_threads() > 1        # the pin must stay gone
     a, _, _ = separate(click_wav, target_source="drums")

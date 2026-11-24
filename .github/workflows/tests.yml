@@ -6,7 +6,7 @@ on:
   pull_request:
   workflow_dispatch:
 
-# Pull requests: a newer push cancels the older run. Pushes to main: never —
+# Pull requests: a newer push cancels the older run. Pushes to main: never,
 # the sequential macOS cells take ~15 min, and a second push inside that
 # window used to cancel the first run's Macs before they reached a verdict.
 concurrency:
@@ -81,7 +81,7 @@ jobs:
   # Runner … after multiple attempts") on consecutive runs. One request at a
   # time is served; the four versions therefore run sequentially (~3 min each).
   # `macos-latest` floats (macOS 26 arm64 since Nov 2026, like mirdata/librosa
-  # use). When GitHub's Mac pool is short, jobs can be dropped unstarted —
+  # use). When GitHub's Mac pool is short, jobs can be dropped unstarted,
   # that is a capacity issue, not a test failure: "Re-run failed jobs".
   test-macos:
     name: macOS · Python ${{ matrix.python }}

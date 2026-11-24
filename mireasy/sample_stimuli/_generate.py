@@ -76,14 +76,14 @@ def drum_track(bpm, length_s, pattern):
 def main():
     songs = {}
 
-    # 1. Steady four-on-the-floor at 120 BPM — low syncopation.
+    # 1. Steady four-on-the-floor at 120 BPM, low syncopation.
     songs["01_steady_drums_120bpm.mp3"] = normalize(drum_track(
         120, 8.0,
         [(kick, 0), (kick, 1), (kick, 2), (kick, 3),
          (snare, 1), (snare, 3),
          (hat, 0.5), (hat, 1.5), (hat, 2.5), (hat, 3.5)]))
 
-    # 2. Offbeat-heavy pattern at 95 BPM — high syncopation.
+    # 2. Offbeat-heavy pattern at 95 BPM, high syncopation.
     songs["02_syncopated_drums_95bpm.mp3"] = normalize(drum_track(
         95, 8.0,
         [(kick, 0), (kick, 1.75), (kick, 2.5), (snare, 1.25), (snare, 3.5),
@@ -110,7 +110,7 @@ def main():
             place(y, tone(f, spb * 3.8, bright=6) * 0.4, i * 4 * spb / 2)
     songs["04_chords_c_major_80bpm.mp3"] = normalize(y)
 
-    # 5. Quiet ambient pad, no drums — low loudness, non-rhythmic material.
+    # 5. Quiet ambient pad, no drums, low loudness, non-rhythmic material.
     n = int(10.0 * SR)
     t = np.arange(n) / SR
     pad = sum(np.sin(2 * np.pi * f * t + p) for f, p in

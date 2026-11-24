@@ -1,4 +1,4 @@
-"""Tests for mireasy/core.py — loading, CSV export, help/print helpers."""
+"""Tests for mireasy/core.py, loading, CSV export, help/print helpers."""
 import csv
 import os
 
@@ -118,7 +118,7 @@ def test_stimulus_print_summary(sine_wav, capsys):
     stimulus_print(Stimulus(sine_wav))
     out = capsys.readouterr().out
     assert "Int.LUFS" in out and "sine_440.wav" in out
-    assert "BPM      : (...)" in out       # lazy — must not trigger detection
+    assert "BPM      : (...)" in out       # lazy, must not trigger detection
 
 
 def test_stimulus_print_all_lists_state(sine_wav, capsys):

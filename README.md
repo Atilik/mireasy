@@ -19,8 +19,8 @@ Please see the **References** section at the end for more information on the inc
 software and download the analysis models once. Your audio files and your results never
 leave your machine.
 
-You can work in two ways: an interactive shell to load, analyze, and visualize audio —
-individually, by session (folder of songs), or by participant (folder of sessions) — or from
+You can work in two ways: an interactive shell to load, analyze, and visualize audio
+individually, by session (folder of songs), or by participant (folder of sessions); or from
 your own Python scripts and notebooks.
 
 ## 📖 Documentation
@@ -54,7 +54,7 @@ To analyze your own audio: `mireasy /path/to/your/audio/`. New to the terminal? 
 ## 🆘 Getting help
 
 Stuck, found a bug, or unsure what a measure means? **Open an issue** at
-<https://github.com/Atilik/mireasy/issues> — it's a public message to us, no
+<https://github.com/Atilik/mireasy/issues>. It's a public message to us, no
 programming involved, and **[CONTRIBUTING.md](https://github.com/Atilik/mireasy/blob/main/CONTRIBUTING.md) walks you
 through it click by click**.
 Feature requests and pull requests are covered there too.
@@ -67,5 +67,7 @@ research, please also cite the tools that computed your measures: they are liste
 
 ## License
 
-See [LICENSE.md](https://github.com/Atilik/mireasy/blob/main/LICENSE.md). The licenses of the tools MIReasy
-builds on are listed in [DEPENDENCY_LICENSES.md](https://github.com/Atilik/mireasy/blob/main/DEPENDENCY_LICENSES.md).
+MIReasy's own code is under the BSD 3-Clause license ([LICENSE.md](https://github.com/Atilik/mireasy/blob/main/LICENSE.md)).
+Some of the tools it builds on have stronger terms: Essentia is AGPL-3.0, and the model weights are for
+non-commercial or research use only. So MIReasy is free to use for research, but it is not cleared for
+commercial use. Details are in [DEPENDENCY_LICENSES.md](https://github.com/Atilik/mireasy/blob/main/DEPENDENCY_LICENSES.md).

@@ -238,7 +238,7 @@ class Stimulus:
             confirm = False
         if confirm and self.separated_drums is None:
             ans = input(
-                "!!! This requires Demucs drum separation — on a CPU it takes roughly\n"
+                "!!! This requires Demucs drum separation. On a CPU it takes roughly\n"
                 "    as long as the song itself.\n"
                 "Proceed? [Y/n] "
             ).strip().lower()
@@ -376,7 +376,7 @@ class Stimulus:
         try:
             results = _classify_all(self.audio_file_path)
         except (FileNotFoundError, ValueError) as e:
-            print(f"  ⚠️  Skipped genre/voice/mood — {e}")
+            print(f"  ⚠️  Skipped genre/voice/mood: {e}")
             return
         self._genre_predictions = results["genre"]
         self._voice_instrumental = results["voice_instrumental"]
@@ -399,9 +399,9 @@ class Stimulus:
         try:
             self._pitch_if_needed()
         except FileNotFoundError as e:
-            print(f"  ⚠️  Skipped pitch — {e}")
+            print(f"  ⚠️  Skipped pitch: {e}")
 
-        # Key/scale detection (algorithmic — needs no model files)
+        # Key/scale detection (algorithmic, needs no model files)
         print("  Detecting key/scale...")
         self._key, self._scale, self._key_strength = _detect_key(
             self.audio_file_path
@@ -424,7 +424,7 @@ class Stimulus:
         # Key
         print(f"  {'Key':<20s} {self._key} {self._scale}  ({self._key_strength*100:.0f}%)")
 
-        # Mood — just top mood
+        # Mood, just top mood
         if self._mood:
             top_mood = max(self._mood, key=self._mood.get)
             print(f"  {'Mood':<20s} {top_mood} ({self._mood[top_mood]*100:.0f}%)")
@@ -627,7 +627,7 @@ class Stimulus:
         return float(np.std(self._compute_spectral_if_needed()["zcr"]))
 
     # Fluctuation
-    # Computed eagerly at init — access directly: stimulus.fluctuation
+    # Computed eagerly at init, access directly: stimulus.fluctuation
 
     def _collect_attrs(self):
         """
@@ -788,7 +788,7 @@ class Stimulus:
         print(f"Processing {self.audio_file_name}...")
         # Trigger beat detection + BPM
         _ = self.bpm
-        # Trigger separation (no confirmation — batch mode)
+        # Trigger separation (no confirmation, batch mode)
         if self.separated_drums is None:
             self.separate(confirm=False)
         # Trigger both syncopation scores
@@ -820,7 +820,7 @@ class Stimulus:
             try:
                 self._pitch_if_needed()
             except FileNotFoundError as e:
-                print(f"  ⚠️  Skipped pitch — {e}")
+                print(f"  ⚠️  Skipped pitch: {e}")
         if key:
             self._key, self._scale, self._key_strength = \
                 _detect_key(self.audio_file_path)
@@ -838,9 +838,9 @@ class Stimulus:
         **Groups**
 
         rhythm
-            beats, BPM, meter (BEAT THIS! only — fast)
+            beats, BPM, meter (BEAT THIS! only, fast)
         syncopation
-            Demucs drum separation + both Toussaint syncopation scores
+            Demucs drum separation + both syncopation scores
             (slow; auto-detects beats first if needed)
         genre
             Essentia genre / voice-instrumental / mood classifiers
@@ -859,7 +859,7 @@ class Stimulus:
         >>> stimulus.partial_process_save(rhythm=True, pitch=True)
         """
         if not any([rhythm, syncopation, genre, pitch, key, spectral]):
-            print("No feature group selected — saving basics only.\n"
+            print("No feature group selected, saving basics only.\n"
                   "Available groups: rhythm, syncopation, genre, pitch, key, spectral\n"
                   "e.g. stimulus.partial_process_save(rhythm=True, pitch=True)")
         print(f"Processing {self.audio_file_name} (partial)...")
@@ -1005,7 +1005,7 @@ class Session:
                 ).strip().lower()
                 if ans in ('n', 'no'):
                     do_separate = False
-                    print("Skipping drum separation — syncopation scores will not be calculated.")
+                    print("Skipping drum separation. Syncopation scores will not be calculated.")
 
         for s in self.items:
             # Trigger BPM
@@ -1120,7 +1120,7 @@ class Session:
         one CSV. See Stimulus.partial_process_save for group definitions.
         """
         if not any([rhythm, syncopation, genre, pitch, key, spectral]):
-            print("No feature group selected — saving basics only.\n"
+            print("No feature group selected, saving basics only.\n"
                   "Available groups: rhythm, syncopation, genre, pitch, key, spectral")
         print(f"Processing {len(self.items)} items (partial)...")
         for s in self.items:
@@ -1327,7 +1327,7 @@ class Participant:
                 ).strip().lower()
                 if ans in ('n', 'no'):
                     do_separate = False
-                    print("Skipping drum separation — syncopation scores will not be calculated.\n")
+                    print("Skipping drum separation. Syncopation scores will not be calculated.\n")
 
             for i, session in enumerate(self.sessions):
                 session_name = os.path.basename(session.folder_path)
@@ -1354,7 +1354,7 @@ class Participant:
         See Stimulus.partial_process_save for group definitions.
         """
         if not any([rhythm, syncopation, genre, pitch, key, spectral]):
-            print("No feature group selected — saving basics only.\n"
+            print("No feature group selected, saving basics only.\n"
                   "Available groups: rhythm, syncopation, genre, pitch, key, spectral")
         print(f"Processing {self.n_sessions} sessions (partial)...")
         for i, session in enumerate(self.sessions):
@@ -1447,7 +1447,7 @@ class Participant:
         _participant_print(self)
 
 
-# Folder helpers — used by Session, Participant and mireasy()
+# Folder helpers, used by Session, Participant and mireasy()
 
 def _is_hidden(name):
     """Hidden/system entries to ignore: .DS_Store, .ipynb_checkpoints,
@@ -1464,7 +1464,7 @@ def _folder_has_subdirs(path):
     return False
 
 
-# mireasy() — smart entry point
+# mireasy(), smart entry point
 
 def mireasy(path):
     """
@@ -1488,7 +1488,7 @@ def mireasy(path):
             if loose:
                 print(
                     f"⚠️  Ignoring {len(loose)} audio file(s) at the top level of "
-                    f"'{path}' — it contains sub-folders, so it is loaded as a "
+                    f"'{path}'. It contains sub-folders, so it is loaded as a "
                     f"participant (audio must live inside session folders)."
                 )
             return Participant(path)

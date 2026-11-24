@@ -1,4 +1,4 @@
-"""Guards for the GitHub Actions workflow — the platform/Python support claim
+"""Guards for the GitHub Actions workflow, the platform/Python support claim
 lives there. Offline and fast (PyYAML is a demucs dependency, always present).
 """
 import os
@@ -38,7 +38,7 @@ def test_workflow_parses_and_triggers_on_main_and_prs():
 def test_matrix_covers_the_supported_platforms_and_pythons():
     linux, mac = _job("test-linux"), _job("test-macos")
     assert linux["runs-on"] == "ubuntu-latest"
-    assert mac["runs-on"] == "macos-latest"      # floating on purpose (his call, 2026-11-17)
+    assert mac["runs-on"] == "macos-latest"      # floating on purpose
     for job in (linux, mac):
         assert job["strategy"]["matrix"]["python"] == PYTHONS
         assert job["strategy"]["fail-fast"] is False
@@ -46,15 +46,15 @@ def test_matrix_covers_the_supported_platforms_and_pythons():
 
 def test_pushes_to_main_are_never_cancelled_by_later_pushes():
     # With sequential macOS cells a main run takes ~15 min; a second push in
-    # that window must queue behind it, not cancel it (2026-11-17 lesson).
+    # that window must queue behind it, not cancel it.
     c = _workflow()["concurrency"]
     assert c["cancel-in-progress"] == "${{ github.event_name == 'pull_request' }}"
 
 
 def test_macos_jobs_are_requested_one_at_a_time():
     # GitHub's Apple-Silicon runner pool is capacity-constrained: four
-    # simultaneous requests got three dropped unstarted on consecutive runs
-    # (2026-11-17). Sequential requests get served.
+    # simultaneous requests got three dropped unstarted on consecutive runs.
+    # Sequential requests get served.
     assert _job("test-macos")["strategy"]["max-parallel"] == 1
 
 

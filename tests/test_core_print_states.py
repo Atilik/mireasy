@@ -1,6 +1,6 @@
 """core.py print helpers in every state (issue #22): a fully analysed stimulus,
 array- and list-valued attributes, empty collections and collections longer
-than the 20-line listing limit. Offline; nothing is computed by a model —
+than the 20-line listing limit. Offline; nothing is computed by a model,
 results are injected.
 """
 import os

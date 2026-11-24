@@ -39,7 +39,7 @@ def test_session_loads_aif(tmp_path, sine_wav):
 
 
 def test_session_skips_unreadable_file(session_folder, capsys):
-    # Regression (#4): corrupt files are skipped at load with a message
+    # Regression: corrupt files are skipped at load with a message
     with open(os.path.join(session_folder, "03_broken.wav"), "w") as f:
         f.write("garbage bytes")
     sess = Session(session_folder)
@@ -126,10 +126,10 @@ def test_session_save_writes_all_rows(session_folder, tmp_path):
     assert [r["filename"] for r in rows] == ["01_alpha.wav", "02_beta.wav"]
 
 
-# ── Session: batch processing (injected — no ML) ────────────
+# ── Session: batch processing (injected, no ML) ────────────
 
 def test_process_all_items_computes_both_scores(session_folder, inject_rhythm):
-    # Regression (#3): batch path must produce the meter-aware score too
+    # Regression: batch path must produce the meter-aware score too
     sess = Session(session_folder)
     for s in sess.items:
         inject_rhythm(s, dur=2.0)
@@ -284,7 +284,7 @@ def _read_saved_csv(out_dir):
 
 
 def test_session_partial_process_save_rhythm(session_folder, tmp_path, inject_rhythm):
-    # rhythm = beats/BPM only (fast path — no syncopation columns)
+    # rhythm = beats/BPM only (fast path, no syncopation columns)
     sess = Session(session_folder)
     for s in sess.items:
         inject_rhythm(s, dur=2.0)               # no BEAT THIS! needed
@@ -403,7 +403,7 @@ def test_mireasy_missing_path_raises():
 
 
 def test_mireasy_mixed_folder_warns(participant_folder, sine_wav, capsys):
-    # Regression (#7): loose top-level audio must be called out
+    # Regression: loose top-level audio must be called out
     shutil.copy(sine_wav, os.path.join(participant_folder, "loose.wav"))
     obj = mireasy(participant_folder)
     out = capsys.readouterr().out

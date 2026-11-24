@@ -1,4 +1,4 @@
-"""Tests for the crest factor (peak-to-RMS, dB) measure — issue #7."""
+"""Tests for the crest factor (peak-to-RMS, dB) measure, issue #7."""
 import numpy as np
 import pytest
 
@@ -31,5 +31,5 @@ def test_amplitude_invariant():
 def test_silence_is_nan_and_stereo_is_mixed_to_mono():
     assert np.isnan(get_crest_factor_db(np.zeros(1000)))
     assert np.isnan(get_crest_factor_db(np.zeros(0)))
-    stereo = np.stack([make_sine(440), make_sine(220)])        # (2, n) — mireasy layout
+    stereo = np.stack([make_sine(440), make_sine(220)])        # (2, n), mireasy layout
     assert np.isfinite(get_crest_factor_db(stereo))

@@ -1,6 +1,6 @@
 """Tests for mireasy/play.py and mireasy/plot.py.
 
-The GUI windows (Tk + audio device) cannot be driven headlessly — those are
+The GUI windows (Tk + audio device) cannot be driven headlessly, those are
 manual-test territory. Here we cover the pure helpers and the public API
 surface so refactors that break imports/signatures fail fast.
 """
@@ -36,7 +36,7 @@ def test_format_time():
     assert _format_time(3599) == "59:59"
 
 
-# ── figure construction (headless — window display is mocked) ──
+# ── figure construction (headless, window display is mocked) ──
 
 @pytest.fixture
 def captured_figure(monkeypatch):
@@ -71,8 +71,8 @@ def test_session_boxplot_builds_panels(session_folder, captured_figure):
 
 
 def test_figures_are_not_pyplot_managed(sine_wav, captured_figure):
-    # Regression (#18): figures must not register with pyplot's figure
-    # manager — that coupling was why the backend had to be forced to Agg
+    # Regression: figures must not register with pyplot's figure
+    # manager, that coupling was why the backend had to be forced to Agg
     import matplotlib.pyplot as plt
     from mireasy.mireasy import Stimulus
     from mireasy.plot import plot_waveform

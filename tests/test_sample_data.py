@@ -1,9 +1,9 @@
 """Guards for the bundled sample dataset (mireasy/sample_stimuli/). Offline and fast.
 
-The samples are the documentation's "try it right now" path — if they rot, the first
+The samples are the documentation's "try it right now" path, if they rot, the first
 thing a new user touches breaks. They ship as MP3 (issue #15: six times
 smaller than WAV for people downloading the repository) and live inside the
-package since 2026-11-19 so `mireasy --demo` works after `pip install mireasy`
+package so `mireasy --demo` works after `pip install mireasy`
 (issue #21).
 """
 import os
@@ -66,8 +66,8 @@ def test_ambient_sample_is_actually_quiet():
 
 
 def test_site_home_documents_the_samples():
-    # The "try it right now" walkthrough moved from the README to the site's
-    # home page (docs/index.md) on 2026-11-23.
+    # The "try it right now" walkthrough lives on the site's home page
+    # (docs/index.md).
     with open(os.path.join(REPO, "docs", "index.md"), encoding="utf-8") as f:
         home = f.read()
     assert "sample_stimuli" in home and "mireasy --demo" in home

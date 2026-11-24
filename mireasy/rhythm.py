@@ -23,7 +23,7 @@ def _get_beat_this_model():
     return _beat_this_model
 
 
-# Helpers moved from evas_eval.py
+# Helpers
 
 METER_WEIGHTS = {
     4: np.array([5, 1, 2, 1, 3, 1, 2, 1, 4, 1, 2, 1, 3, 1, 2, 1], dtype=int),
@@ -137,7 +137,7 @@ def _pattern_from_beats_and_onsets(beat_times, onset_times, beat_positions=None,
     return grid, num_bars
 
 def _score_pattern(pattern, num_bars, beats_per_bar=4, steps_per_beat=4):
-    """(Helper) Calculate Toussaint syncopation score from pattern."""
+    """(Helper) Calculate the syncopation score (inspired by Toussaint, 2002) from pattern."""
     if pattern is None or num_bars is None:
         return float("nan")
 
@@ -272,7 +272,7 @@ def _derive_positions_and_meter(beat_times, downbeat_times):
     positions = np.ones(len(bt), dtype=int)  # default all to 1
 
     if len(db) < 2:
-        # Not enough downbeats — assume 4/4
+        # Not enough downbeats, assume 4/4
         for i in range(len(bt)):
             positions[i] = (i % 4) + 1
         return positions, 4
@@ -353,7 +353,7 @@ def _detect_beats_beat_this(y, sr, hop_length=512):
     # Audio2Beats expects a 1-D float32 tensor or numpy array
     y_float = y.astype(np.float32) if y.dtype != np.float32 else y
 
-    # Run inference — returns (beats_seconds, downbeats_seconds)
+    # Run inference, returns (beats_seconds, downbeats_seconds)
     beat_times, downbeat_times = model(y_float, sr)
 
     beat_times = np.asarray(beat_times, dtype=float)

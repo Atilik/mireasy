@@ -24,7 +24,7 @@ def test_get_bpm_120():
 
 
 def test_get_bpm_returns_float_with_sub_bpm_precision():
-    # Regression (#6): used to quantize to int
+    # Regression: used to quantize to int
     bpm = get_bpm(np.arange(0, 20, 0.483))
     assert isinstance(bpm, float)
     assert bpm == pytest.approx(124.22, abs=0.01)
@@ -229,11 +229,11 @@ def test_syncopation_score_with_beat_positions():
     assert 0 <= score <= 100
 
 
-# ── detect_beats (model-based — slow) ───────────────────────
+# ── detect_beats (model-based, slow) ───────────────────────
 
 @pytest.mark.skipif(not RUN_SLOW, reason="set MIREASY_RUN_SLOW=1 to run model-based beat detection")
 def test_detect_beats_beat_this_on_clicks():
-    # Default beat-detection path (BEAT THIS!) — downloads its checkpoint on
+    # Default beat-detection path (BEAT THIS!), downloads its checkpoint on
     # first ever run (~80 MB), cached afterwards.
     from mireasy.rhythm import detect_beats
     times = np.arange(0.5, 9.5, 0.5)

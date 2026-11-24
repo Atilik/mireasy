@@ -16,7 +16,7 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # `stimulus.bpm`, `session.help()`, `s.save_timeseries()`, ...
 PREFIXED = re.compile(r"\b(stimulus|session|participant|s)\.([A-Za-z_]\w*)")
-# `.duration`, `.pitch_mean/std`, `.pitch_time/freq/conf` — a dot that is not
+# `.duration`, `.pitch_mean/std`, `.pitch_time/freq/conf`, a dot that is not
 # preceded by a name, number or bracket (so "BS.1770" or "0.5" don't match)
 BARE = re.compile(r"(?<![\w)\]])\.([A-Za-z_][\w/]*)")
 

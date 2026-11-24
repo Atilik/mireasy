@@ -1,4 +1,4 @@
-"""Guards for pyproject.toml — the `pip install` recipe — and its agreement
+"""Guards for pyproject.toml, the `pip install` recipe, and its agreement
 with environment.yml (the exact-pinned conda recipe). Offline and fast.
 """
 import os
@@ -56,7 +56,7 @@ def test_version_is_a_single_source_of_truth():
 
 def test_no_git_url_or_compiled_dependencies():
     # PyPI rejects uploads whose dependencies point at URLs (PEP 440 direct
-    # references), so every dependency must be a plain PyPI name — that is the
+    # references), so every dependency must be a plain PyPI name, that is the
     # gate for `pip install mireasy` (issue #21). beat-this is on PyPI since 1.1.0.
     deps = _pyproject()["project"]["dependencies"]
     assert not any("git+" in d for d in deps), "a git dependency crept into pyproject.toml"

@@ -18,14 +18,14 @@ from matplotlib.ticker import ScalarFormatter
 def _sounddevice():
     """
     Import sounddevice on first playback. It needs the PortAudio system
-    library, which Linux/headless machines may lack — that should only
+    library, which Linux/headless machines may lack, that should only
     disable playback, not the whole analysis toolbox.
     """
     try:
         import sounddevice
     except OSError as e:
         raise RuntimeError(
-            "Audio playback needs the PortAudio library — on Linux: "
+            "Audio playback needs the PortAudio library. On Linux: "
             "sudo apt install libportaudio2"
         ) from e
     return sounddevice
@@ -249,7 +249,7 @@ def play_audio(y, sr, title="Audio Player", beat_times=None, onset_times=None, s
                          bg="#f38ba8", activebackground="#eba0ac", **btn_style)
     stop_btn.pack(side="left", padx=6)
 
-    # ── Update loop (blitting — only redraws cursor) ──
+    # ── Update loop (blitting, only redraws cursor) ──
     def _update():
         if state["closed"]:
             return
@@ -422,7 +422,7 @@ def play_interactive(stimulus, xlim=None, ylim=None):
     # Tkinter window
     root = _get_tk_root()
     win = tk.Toplevel(root)
-    win.title(f"Player — {stimulus.audio_file_name}")
+    win.title(f"Player: {stimulus.audio_file_name}")
     win.configure(bg=BG)
     win.resizable(True, True)
 
@@ -457,7 +457,7 @@ def play_interactive(stimulus, xlim=None, ylim=None):
     def _compute_spec(scale):
         """Compute (and cache) the dB spectrogram for a scale.
 
-        Pure numpy/librosa — no Tk/matplotlib — so it is safe to call from a
+        Pure numpy/librosa, no Tk/matplotlib, so it is safe to call from a
         worker thread. The heavy FFT releases the GIL, so audio playback keeps
         being fed while this runs.
         """
@@ -475,7 +475,7 @@ def play_interactive(stimulus, xlim=None, ylim=None):
         return spec_cache[scale]
 
     def _draw_spectrogram(scale):
-        # Uses the cached result — computed off-thread on first use (see _switch_view)
+        # Uses the cached result, computed off-thread on first use (see _switch_view)
         S_dB, y_axis = _compute_spec(scale)
         librosa.display.specshow(
             S_dB, sr=sr, x_axis='time', y_axis=y_axis,
@@ -532,7 +532,7 @@ def play_interactive(stimulus, xlim=None, ylim=None):
         ax.tick_params(colors=FG, labelsize=8)
         for spine in ax.spines.values():
             spine.set_color(BORDER)
-        ax.set_title(f"{mode} — {stimulus.audio_file_name}",
+        ax.set_title(f"{mode}: {stimulus.audio_file_name}",
                      color=FG, fontsize=11, pad=8)
         fig.tight_layout(pad=1.5)
 
@@ -588,7 +588,7 @@ def play_interactive(stimulus, xlim=None, ylim=None):
                            color=ONSET_CLR, linestyles="solid",
                            linewidth=1.2, alpha=0.7, label="onsets")
             state["onset_lines"] = lc
-            # Pin the view (see _draw_overlay_beats) — prevents autoscale
+            # Pin the view (see _draw_overlay_beats), prevents autoscale
             # from zooming out on every toggle.
             ax.set_ylim(ymin, ymax)
 
@@ -620,7 +620,7 @@ def play_interactive(stimulus, xlim=None, ylim=None):
     ax.tick_params(colors=FG, labelsize=8)
     for spine in ax.spines.values():
         spine.set_color(BORDER)
-    ax.set_title(f"Waveform — {stimulus.audio_file_name}",
+    ax.set_title(f"Waveform: {stimulus.audio_file_name}",
                  color=FG, fontsize=11, pad=8)
     fig.tight_layout(pad=1.5)
 
@@ -686,14 +686,14 @@ def play_interactive(stimulus, xlim=None, ylim=None):
         _update_view_btn_colors()
 
         if pending is None:
-            # Data is ready (or a lightweight view) — redraw right away.
+            # Data is ready (or a lightweight view), redraw right away.
             _redraw_view()
             status_var.set("")
             return
 
         # Heavy data missing: compute it OFF the UI thread so the audio callback
         # keeps getting fed (numpy FFT / TF inference release the GIL). The redraw
-        # is applied afterwards on the main thread by the cursor loop — this is
+        # is applied afterwards on the main thread by the cursor loop, this is
         # what prevents the audio pop when switching views during playback.
         status_var.set(f"Preparing {mode}...")
         state["switch_gen"] += 1
@@ -712,7 +712,7 @@ def play_interactive(stimulus, xlim=None, ylim=None):
             except Exception as e:
                 print(f"View preparation error: {e}")
             # Post the result back; the main-thread cursor loop applies it.
-            # (No Tk/matplotlib calls here — those must stay on the main thread.)
+            # (No Tk/matplotlib calls here, those must stay on the main thread.)
             state["pending_switch"] = (gen, mode)
 
         threading.Thread(target=_worker, daemon=True).start()
@@ -825,7 +825,7 @@ def play_interactive(stimulus, xlim=None, ylim=None):
         if state["closed"]:
             return
         if not ok:
-            status_var.set(f"{kind.capitalize()} detection failed — see terminal.")
+            status_var.set(f"{kind.capitalize()} detection failed, see terminal.")
             return
         if kind == "beats":
             state["beats_on"] = True
@@ -844,7 +844,7 @@ def play_interactive(stimulus, xlim=None, ylim=None):
 
         def _worker():
             try:
-                prepare()          # numpy/model inference only — no Tk calls
+                prepare()          # numpy/model inference only, no Tk calls
                 ok = True
             except Exception as e:
                 print(f"{kind} detection error: {e}")
@@ -902,7 +902,7 @@ def play_interactive(stimulus, xlim=None, ylim=None):
                     parent=win):
                 status_var.set("")
                 return
-            status_var.set("Separating drums — takes about as long as the song...")
+            status_var.set("Separating drums, takes about as long as the song...")
         else:
             status_var.set("Detecting onsets...")
 

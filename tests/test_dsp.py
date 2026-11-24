@@ -1,4 +1,4 @@
-"""Tests for mireasy/dsp.py — one test (or more) per function."""
+"""Tests for mireasy/dsp.py, one test (or more) per function."""
 import numpy as np
 import pytest
 
@@ -20,7 +20,7 @@ def test_get_loudness_mono():
 
 
 def test_get_loudness_stereo():
-    y = np.stack([make_sine(440), make_sine(220)])  # (2, n) — mireasy layout
+    y = np.stack([make_sine(440), make_sine(220)])  # (2, n), mireasy layout
     lufs, rms_db = get_loudness(y, SR)
     assert np.isfinite(lufs) and np.isfinite(rms_db)
 
@@ -32,10 +32,10 @@ def test_get_loudness_louder_is_higher():
 
 
 def test_get_loudness_full_precision():
-    # Regression (#6): values must not be rounded to 2 decimals
+    # Regression: values must not be rounded to 2 decimals
     lufs, _ = get_loudness(make_sine(amp=0.437), SR)
     assert lufs != round(lufs, 2) or abs(lufs - round(lufs, 2)) < 1e-12
-    # RMS of a 0.437 sine is irrational — 2dp rounding would be detectable
+    # RMS of a 0.437 sine is irrational, 2dp rounding would be detectable
     _, rms_db = get_loudness(make_sine(amp=0.437), SR)
     assert abs(rms_db - round(rms_db, 2)) > 0 or rms_db == round(rms_db, 2)
 
@@ -140,10 +140,58 @@ def test_compute_fluctuation_accepts_stereo():
     assert np.isfinite(summary)
 
 
+def _beat_loop(seconds):
+    """A 2-second bar (clicks every 0.5 s over a soft tone) repeated."""
+    from conftest import make_clicks
+    bar = make_clicks(np.arange(0.0, 2.0, 0.5) + 0.05, 2.0) + 0.2 * make_sine(220, 2.0)
+    return np.tile(bar, int(seconds // 2))
+
+
+def test_fluctuation_does_not_depend_on_file_length():
+    # Regression: the whole file used to go into one FFT, so the same music
+    # scored 2 to 4 times higher at 3 minutes than at 10 seconds. The file is
+    # now analysed in 6-second sequences and the median is taken, as in
+    # Pampalk, Rauber and Merkl (2002).
+    short, mid, long_ = (compute_fluctuation(_beat_loop(s), SR)[0] for s in (24, 60, 120))
+    assert mid == pytest.approx(short, rel=0.05)
+    assert long_ == pytest.approx(short, rel=0.05)
+
+
+def test_fluctuation_median_ignores_one_odd_sequence():
+    # One silent 6-second stretch in a minute of steady music must not move
+    # the value: that is what the median over sequences is for.
+    y = _beat_loop(60)
+    clean = compute_fluctuation(y, SR)[0]
+    y[SR * 30:SR * 36] = 0.0
+    assert compute_fluctuation(y, SR)[0] == pytest.approx(clean, rel=0.05)
+
+
+def test_fluctuation_weighting_peaks_near_4_hz():
+    # Same tremolo depth at 1, 4 and 9 Hz: the Fastl weighting makes 4 Hz count most.
+    rng = np.random.default_rng(0)
+    n = SR * 24
+    t = np.arange(n) / SR
+    noise = rng.standard_normal(n) * 0.3
+
+    def tremolo(f):
+        return compute_fluctuation(noise * (1.0 + 0.5 * np.sin(2 * np.pi * f * t)) / 1.5, SR)[0]
+
+    flat = compute_fluctuation(noise, SR)[0]
+    assert tremolo(4.0) > tremolo(1.0) > flat
+    assert tremolo(4.0) > tremolo(9.0) > flat
+
+
+def test_fluctuation_of_silence_and_of_a_short_file():
+    assert compute_fluctuation(np.zeros(SR * 12), SR)[0] == 0.0
+    # shorter than one 6-second sequence: analysed as a single shorter sequence
+    summary, mod_freqs, per_band = compute_fluctuation(_beat_loop(2), SR)
+    assert np.isfinite(summary) and summary > 0 and per_band.shape == (40, len(mod_freqs))
+
+
 # ── spectral_irregularity ───────────────────────────────────
 
 def test_spectral_irregularity_spike_exceeds_broadband():
-    # Jensen irregularity = Σ(a_k − a_{k+1})² / Σa² — a lone spectral spike
+    # Jensen irregularity = Σ(a_k − a_{k+1})² / Σa², a lone spectral spike
     # (pure sine) is maximally jagged bin-to-bin, while broadband noise
     # spreads energy so adjacent-bin differences are small relative to total.
     rng = np.random.default_rng(1)
