@@ -67,9 +67,11 @@ Access properties on-the-fly. If a metric hasn't been computed yet, `mireasy` co
 'C#'
 >>> stimulus.scale
 'minor'
->>> stimulus.syncopation_score()   # 0–100; separates the drums first if needed
+>>> stimulus.syncopation_score()
 31
 ```
+
+The syncopation score goes from 0 to 100. It separates the drums first if needed.
 
 ### Exporting Data
 - `stimulus.process_and_save("output_folder")`

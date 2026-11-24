@@ -79,4 +79,5 @@ API reference <api/index>
 References <references>
 Contributing <CONTRIBUTING>
 Dependency licenses <DEPENDENCY_LICENSES>
+AI usage disclosure <ai_usage>
 ```

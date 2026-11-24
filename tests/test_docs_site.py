@@ -15,7 +15,7 @@ import yaml
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOCS = os.path.join(REPO, "docs")
 
-SITE_PAGES = ["index", "installation", "guide", "measures", "references"]
+SITE_PAGES = ["index", "installation", "guide", "measures", "references", "ai_usage"]
 SYNCED_DOCS = ["CONTRIBUTING.md", "DEPENDENCY_LICENSES.md"]
 SITE = "https://mireasy.readthedocs.io"
 

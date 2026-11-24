@@ -39,7 +39,7 @@ SYNCED = {
 
 # Top-level pages of the site (the navigation itself is the toctree in index.md).
 PAGES = ["index", "installation", "guide", "measures", "references",
-         "CONTRIBUTING", "DEPENDENCY_LICENSES"]
+         "CONTRIBUTING", "DEPENDENCY_LICENSES", "ai_usage"]
 
 # A link whose label is plain text, or a badge: a link whose label is an image.
 _LINK = re.compile(r"(?<!!)\[((?:[^\[\]]|!\[[^\]]*\]\([^)]*\))*)\]\(([^)\s]+)\)")

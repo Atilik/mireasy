@@ -11,18 +11,29 @@ from mireasy import Stimulus, Session
 
 # Single file
 s = Stimulus("song.wav")
-s.process_and_save()              # compute all → CSV
-s.process_and_save(timeseries=True)  # also save .npz time series
-s.partial_process_save(rhythm=True, pitch=True)  # only selected groups → CSV
-                # groups: rhythm (beats/BPM, fast), syncopation (Demucs, slow),
-                #         genre, pitch, key, spectral
+
+# Compute everything and save a CSV
+s.process_and_save()
+
+# Also save the time series as an .npz file
+s.process_and_save(timeseries=True)
+
+# Compute only the selected groups and save a CSV.
+# Groups: rhythm (beats and BPM, fast), syncopation (Demucs, slow),
+# genre, pitch, key, spectral
+s.partial_process_save(rhythm=True, pitch=True)
+
 
 # Folder of files
 session = Session("path/to/folder/")
 session.process_and_save()
-session.partial_process_save(rhythm=True)   # partial works at every level
-session.average_fluctuation       # mean fluctuation across the session's songs
-session.average_irregularity      # mean spectral irregularity across songs
+
+# Selected groups work at every level
+session.partial_process_save(rhythm=True)
+
+# Mean fluctuation and mean spectral irregularity across the songs
+session.average_fluctuation
+session.average_irregularity
 ```
 
 ---
@@ -117,8 +128,8 @@ Toussaint (2002) adds up the same weights to get a "metric complexity". Our scor
 >
 > A steady pattern with many fast notes also scores high. Compare stimuli with a similar note density.
 
-> **CSV mapping:** `.toussaint_syncopation_score` → column `syncopation_score`;
-> `.toussaint_syncopation_score_meter` → column `syncopation_score_meter`.
+> **CSV mapping:** `.toussaint_syncopation_score` is saved as column `syncopation_score`,
+> and `.toussaint_syncopation_score_meter` as column `syncopation_score_meter`.
 > Both columns are exported at every level (stimulus, session, participant).
 
 ### Fluctuation
@@ -132,7 +143,7 @@ Toussaint (2002) adds up the same weights to get a "metric complexity". Our scor
 **How it works:**
 1. Compute a mel spectrogram (40 bands, 23ms frames) in decibels
 2. Cut it into 6-second sequences, as in Pampalk et al. (2002)
-3. For each sequence, take the FFT of each band → modulation spectrum up to 10 Hz
+3. For each sequence, take the FFT of each band to get the modulation spectrum up to 10 Hz
 4. Weight by the Fastl psychoacoustic model: `w(f) = 1/(f/4 + 4/f)` (peak at 4 Hz)
 5. Take the median over all sequences, then sum across bands
 
@@ -191,7 +202,7 @@ This is the formula of Jensen (1999), applied to all frequency bins. Jensen appl
 > - **~0.3–0.5**: music (orchestral recordings and the demo songs)
 > - **~0.64**: pure sine tone
 
-> **CSV mapping:** `.irregularity` → column `spectral_irregularity`.
+> **CSV mapping:** `.irregularity` is saved as column `spectral_irregularity`.
 
 Session/participant aggregate: `session.average_irregularity`, `participant.average_irregularity`.
 
@@ -260,7 +271,10 @@ s.process_and_save(timeseries=True)
 ```python
 import numpy as np
 data = np.load("song_timeseries.npz")
-print(data.files)  # list all arrays
+
+# List all arrays
+print(data.files)
+
 pitch = data["pitch_freq"]
 centroid = data["spectral_centroid"]
 ```
@@ -300,7 +314,7 @@ Running `.process_and_save()` generates a CSV with one row per audio file. All n
 **4. Loudness & other:**
 `loudness_lufs`, `loudness_rms_db`, `rms`, `crest_factor_db`, `genre`, `genre_confidence`, `voice_instrumental`, `mood_happy`, `mood_sad`, `mood_aggressive`, `mood_relaxed`
 
-**Attribute → CSV column mapping** (where names differ):
+**Attribute to CSV column mapping** (where names differ):
 
 | Stimulus attribute | CSV column |
 |--------------------|------------|
