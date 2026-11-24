@@ -221,6 +221,16 @@ def test_the_model_is_loaded_once_and_reused(sine_wav, monkeypatch):
 
 # ── full separation (slow, model required) ──────────────────
 
+@pytest.mark.skipif(not (RUN_SLOW and os.environ.get("CI")),
+                    reason="only for the slow tier on CI")
+def test_on_ci_the_demucs_model_is_on_disk():
+    # Without the model the tests below only skip, and a skip is not a failure.
+    # On CI that would let the slow tier pass without testing any separation,
+    # so there a missing model must be an error.
+    assert _demucs_model_on_disk(), \
+        "htdemucs is not on disk, so the Demucs tests would be skipped (see 'Warm model caches')"
+
+
 @SLOW
 def test_model_on_disk_loads_without_any_internet_lookup(monkeypatch):
     # The real thing: with htdemucs on disk, loading it must not look up a
