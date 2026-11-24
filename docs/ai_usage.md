@@ -4,7 +4,7 @@ Generative AI was used in the making of MIReasy. This page says which tools were
 
 ## Tools
 
-- Claude Code (Anthropic), with the Claude Opus and the Claude Fable 5.1 and 5.2 models.
+- Claude Code (Anthropic), with the Claude Opus 4.8, 5 and 5.5 models and the Claude Fable 5, 5.1 and 5.2 models.
 
 ## Where and for what
 
