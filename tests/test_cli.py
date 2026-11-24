@@ -139,3 +139,5 @@ def test_python_dash_m_mireasy(sine_wav):
                        capture_output=True, text=True, timeout=300)
     assert r.returncode == 0, r.stderr[-2000:]
     assert 'Stimulus("sine_440.wav")' in r.stdout
+    # The loading bar is for terminals only: captured output stays clean.
+    assert "Starting MIReasy" not in r.stdout

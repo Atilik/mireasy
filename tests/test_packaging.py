@@ -44,7 +44,8 @@ def test_pyproject_names_the_package_and_entry_point():
     p = _pyproject()["project"]
     assert p["name"] == "mireasy"
     assert p["requires-python"] == ">=3.11,<3.15"
-    assert p["scripts"]["mireasy"] == "mireasy.mireasy:main"
+    # __main__ is light: it shows the loading bar, then loads the analysis stack.
+    assert p["scripts"]["mireasy"] == "mireasy.__main__:main"
     assert p["scripts"]["mireasy-download-models"] == "mireasy.download_models:main"
 
 

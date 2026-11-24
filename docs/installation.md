@@ -40,7 +40,7 @@ Repeat the `source` line in every new Terminal before using MIReasy.
 mireasy --demo
 ```
 
-This opens the five test songs that come with MIReasy. Type `session.print()` to list the songs, `stimulus.bpm` for the tempo of the first one, or `session.process_and_save(".")` to write a CSV with every measure. Leave with `exit()`.
+This opens the five test songs that come with MIReasy. The first start can take up to a minute, and a loading bar shows that it is working. Type `session.print()` to list the songs, `stimulus.bpm` for the tempo of the first one, or `session.process_and_save(".")` to write a CSV with every measure. Leave with `exit()`.
 
 For your own audio:
 
