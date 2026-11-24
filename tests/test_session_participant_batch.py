@@ -85,6 +85,14 @@ def test_session_process_all_exports_a_timeseries_per_item(
     assert npz == ["01_alpha_timeseries.npz", "02_beta_timeseries.npz"]
 
 
+def test_session_process_all_announces_the_batch_once(
+        session_folder, inject_rhythm, fake_models, tmp_path, capsys):
+    sess = Session(session_folder)
+    _inject_all(sess, inject_rhythm)
+    sess.process_and_save(output_path=str(tmp_path))
+    assert capsys.readouterr().out.count("Processing 2 items...") == 1
+
+
 def test_session_partial_process_exports_timeseries(session_folder, inject_rhythm, tmp_path):
     sess = Session(session_folder)
     _inject_all(sess, inject_rhythm)

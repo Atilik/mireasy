@@ -1101,7 +1101,6 @@ class Session:
             if timeseries:
                 item.save_timeseries(output_path=output_path)
         else:
-            print(f"Processing {len(self.items)} items...")
             self._process_all_items()
             for s in self.items:
                 s.classify()
