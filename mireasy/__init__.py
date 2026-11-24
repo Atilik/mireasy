@@ -9,12 +9,17 @@ Interactive shell:
 
     python -m mireasy <audio_file_or_folder>
 """
+from .certs import ensure_certificates as _ensure_certificates
 
 # Single source of truth for the version (pyproject.toml reads it statically).
 # ".dev0" marks an unreleased build; the first release will be 0.1.0.
 __version__ = "0.1.0.dev0"
 
 __all__ = ["Stimulus", "Session", "Participant"]
+
+# Python from python.org on a Mac starts without root certificates, and then
+# the model downloads fail. This makes them work there (see certs.py).
+_ensure_certificates()
 
 
 def __getattr__(name):

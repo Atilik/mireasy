@@ -6,7 +6,7 @@ MIReasy works with Linux and Mac (Apple Silicon), and you need 3 GB of free disk
 
 MIReasy needs Python 3.11 or newer (3.12 recommended).
 
-- **Mac:** download the installer from **<https://www.python.org/downloads/macos/>**, open it, and click through with the default choices. **At the end a Finder window opens: double-click `Install Certificates.command` in it.** Without this step Python cannot download the analysis models later.
+- **Mac:** download the installer from **<https://www.python.org/downloads/macos/>**, open it, and click through with the default choices.
 - **Terminal/Linux:**
 
   ```bash
@@ -59,7 +59,6 @@ You can drag your audio folder into the Terminal instead of typing its path. The
 
 - `python3: command not found`: close the Terminal and open it again.
 - `error: externally-managed-environment`: on a Mac, use the python.org Python from Step 1. On Linux, follow the Linux note in Step 2.
-- `CERTIFICATE_VERIFY_FAILED` (Mac): run `Install Certificates.command` from Step 1, then `mireasy-download-models` again.
 - `.m4a` files are not read: install ffmpeg (`brew install ffmpeg` on a Mac). WAV, MP3, FLAC and OGG work without it.
 - Anything else: copy the error text and open an issue at <https://github.com/Atilik/mireasy/issues>. [CONTRIBUTING.md](CONTRIBUTING.md) shows how.
 

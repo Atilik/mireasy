@@ -34,3 +34,5 @@ dependencies:
       - pytest==8.4.2
       # BEAT THIS! beat tracker (ISMIR 2024), pure-Python wheel from PyPI.
       - beat-this==1.1.0
+      # Root certificates for the model downloads. Not pinned: newer is safer.
+      - certifi>=2024.7.4

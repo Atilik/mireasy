@@ -44,13 +44,14 @@ Versions are those of the tested environment.
 | [soundfile](https://python-soundfile.readthedocs.io) | 0.14.0 | BSD-3-Clause | Audio file reading and writing |
 | [sounddevice](https://python-sounddevice.readthedocs.io) | 0.5.5 | MIT | Audio playback |
 | [IPython](https://ipython.org) | 9.17.1 | BSD-3-Clause | Interactive shell |
+| [certifi](https://github.com/certifi/python-certifi) | 2026.11.20 | MPL-2.0 | Root certificates for the model downloads |
 
 ## Other pieces worth knowing
 
 | Component | License | Note |
 |---|---|---|
 | soxr, lameenc, libsndfile (inside soundfile) | LGPL | Installed through librosa, beat-this and demucs |
-| certifi, tqdm | MPL-2.0 | Installed through other packages |
+| tqdm | MPL-2.0 | Installed through other packages |
 | NVIDIA CUDA libraries | NVIDIA proprietary license | Linux only: 14 packages that PyTorch pulls in from PyPI |
 | TensorFlow (inside essentia-tensorflow) | Apache-2.0 | Runs the classifier models |
 | FFmpeg | GPL or LGPL, depending on the build | Optional, a separate program used to read formats such as .m4a |

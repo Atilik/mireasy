@@ -40,8 +40,8 @@ measure on your own arrays rather than the full object model.
 
 ## Model files
 
-Where the downloaded Essentia models live, and the `mireasy-download-models`
-command that fetches them.
+Where the downloaded Essentia models live, the `mireasy-download-models`
+command that fetches them, and the certificates used for the downloads.
 
 ```{eval-rst}
 .. automodule:: mireasy.paths
@@ -49,4 +49,7 @@ command that fetches them.
 
 .. automodule:: mireasy.download_models
    :members: main
+
+.. automodule:: mireasy.certs
+   :members:
 ```

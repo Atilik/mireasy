@@ -66,6 +66,13 @@ def test_no_git_url_or_compiled_dependencies():
     assert len(bt) == 1 and ">=1.1" in bt[0], "beat-this must come from PyPI, 1.1 or newer"
 
 
+def test_certifi_is_a_declared_dependency():
+    # mireasy/certs.py imports certifi. It also arrives through librosa, but
+    # the downloads on a Mac must not depend on that chain staying as it is.
+    deps = _pyproject()["project"]["dependencies"]
+    assert any(_name(d) == "certifi" for d in deps), "certifi is missing from pyproject.toml"
+
+
 def test_essentia_has_a_python_314_rule():
     # Essentia's 3.14 wheels exist only from build dev1438; older Pythons keep
     # the pin we tested. Both markers must be present and complementary.

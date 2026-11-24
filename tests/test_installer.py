@@ -35,7 +35,6 @@ def test_installation_page_mentions_the_moving_parts():
     # use it. The guide lives on the documentation site (docs/installation.md).
     s = _read("docs/installation.md")
     for needle in ("python.org", 'install -e ".[test]"',
-                   "Install Certificates.command",      # python.org Mac gotcha
                    "externally-managed-environment",    # the case that needs a venv
                    "mireasy-download-models", "run_tests.py", "mireasy --demo",
                    "conda env create -f environment.yml", "conda activate mireasy",
@@ -63,7 +62,7 @@ def test_dependency_licenses_md_covers_every_direct_dep():
     s = _read("DEPENDENCY_LICENSES.md")
     for dep in ("beat_this", "demucs", "essentia", "librosa",
                 "mir_eval", "pyloudnorm", "numpy", "scipy", "torch",
-                "matplotlib", "sounddevice"):
+                "matplotlib", "sounddevice", "certifi"):
         assert dep in s, f"DEPENDENCY_LICENSES.md misses dependency: {dep}"
     for flag in ("AGPL-3.0", "CC BY-NC-SA"):
         assert flag in s, f"DEPENDENCY_LICENSES.md lost the {flag} flag"
